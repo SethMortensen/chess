@@ -64,6 +64,11 @@ public class ChessPiece {
         Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board);
     }
 
+    @Override
+    public String toString() {
+        return "Color: " + pieceColor + "\nType: " + type;
+    }
+
     static class KnightMoveStrategy implements ChessPiece.MoveStrategy {
         @Override
         public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
@@ -84,6 +89,62 @@ public class ChessPiece {
         }
     }
 
+    static class RookMoveStrategy implements ChessPiece.MoveStrategy {
+        @Override
+        public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
+            Collection<ChessMove> moves = new ArrayList<>();
+            int x_offset = 1;
+            int y_offset = 1;
+            while (x_offset + position.getRow() <= 8 && (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())) == null)) {
+                moves.add(new ChessMove(position, new ChessPosition(position.getRow() + x_offset, position.getColumn()), null));
+                x_offset++;
+            }
+            if (x_offset + position.getRow() <= 8) {
+                if (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())) != null) {
+                    if (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())).pieceColor != board.getPiece(position).pieceColor) {
+                        moves.add(new ChessMove(position, new ChessPosition(position.getRow() + x_offset, position.getColumn()), null));
+                    }
+                }
+            }
+            while (y_offset + position.getColumn() <= 8 && (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)) == null)) {
+                moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn() + y_offset), null));
+                y_offset++;
+            }
+            if (y_offset + position.getColumn() <= 8) {
+                if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)) != null) {
+                    if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)).pieceColor != board.getPiece(position).pieceColor) {
+                        moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn() + y_offset), null));
+                    }
+                }
+            }
+            x_offset = -1;
+            y_offset = -1;
+            while (x_offset + position.getRow() >= 1 && (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())) == null)) {
+                moves.add(new ChessMove(position, new ChessPosition(position.getRow() + x_offset, position.getColumn()), null));
+                x_offset--;
+            }
+            if (x_offset + position.getRow() >= 1) {
+                if (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())) != null) {
+                    if (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())).pieceColor != board.getPiece(position).pieceColor) {
+                        moves.add(new ChessMove(position, new ChessPosition(position.getRow() + x_offset, position.getColumn()), null));
+                    }
+                }
+            }
+            while (y_offset + position.getColumn() >= 1 && (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)) == null)) {
+                moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn() + y_offset), null));
+                y_offset--;
+            }
+            if (y_offset + position.getColumn() >= 1) {
+                if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)) != null) {
+                    if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)).pieceColor != board.getPiece(position).pieceColor) {
+                        moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn() + y_offset), null));
+                    }
+                }
+            }
+            return moves;
+        }
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -94,6 +155,9 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if (board.getPiece(myPosition).type == ChessPiece.PieceType.KNIGHT) {
             MoveStrategy strategy = new KnightMoveStrategy();
+            return strategy.getValidMoves(myPosition, board);
+        } else if (board.getPiece(myPosition).type == ChessPiece.PieceType.ROOK) {
+            MoveStrategy strategy = new RookMoveStrategy();
             return strategy.getValidMoves(myPosition, board);
         }
         return null;
