@@ -62,6 +62,13 @@ public class ChessPiece {
 
     interface MoveStrategy {
         Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board);
+
+        default boolean isValidMove(ChessPosition position, ChessPosition target, ChessBoard board) {
+            if (target.getColumn() <= 8 && target.getRow() <= 8 && target.getColumn() >= 1 && target.getRow() >= 1) {
+                return board.getPiece(target) == null || board.getPiece(target).pieceColor != board.getPiece(position).pieceColor;
+            }
+            return false;
+        }
     }
 
     @Override
@@ -73,16 +80,12 @@ public class ChessPiece {
         @Override
         public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
             Collection<ChessMove> moves = new ArrayList<>();
-            int[][] offsets = { {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2} };
+            int[][] offsets = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
 
             for (int[] offset : offsets) {
                 ChessPosition target = new ChessPosition(position.getRow() + offset[0], position.getColumn() + offset[1]);
-                if (target.getColumn() <= 8 && target.getColumn() >= 1 && target.getRow() <= 8 && target.getRow() >= 1) {
-                    if(board.getPiece(target) == null) {
-                        moves.add(new ChessMove(position, target, null));
-                    } else if (board.getPiece(position).pieceColor != board.getPiece(target).pieceColor) {
-                        moves.add(new ChessMove(position, target, null));
-                    }
+                if (isValidMove(position, target, board)) {
+                    moves.add(new ChessMove(position, target, null));
                 }
             }
             return moves;
@@ -94,52 +97,44 @@ public class ChessPiece {
         public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
             Collection<ChessMove> moves = new ArrayList<>();
             int x_offset = 1;
-            int y_offset = 1;
-            while (x_offset + position.getRow() <= 8 && (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())) == null)) {
-                moves.add(new ChessMove(position, new ChessPosition(position.getRow() + x_offset, position.getColumn()), null));
+            ChessPosition target = new ChessPosition(position.getRow() + x_offset, position.getColumn());
+            while (isValidMove(position, target, board)) {
+                moves.add(new ChessMove(position, target, null));
+                if (board.getPiece(target) != null) {
+                    break;
+                }
                 x_offset++;
+                target = new ChessPosition(position.getRow() + x_offset, position.getColumn());
             }
-            if (x_offset + position.getRow() <= 8) {
-                if (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())) != null) {
-                    if (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())).pieceColor != board.getPiece(position).pieceColor) {
-                        moves.add(new ChessMove(position, new ChessPosition(position.getRow() + x_offset, position.getColumn()), null));
-                    }
+            int y_offset = 1;
+            target = new ChessPosition(position.getRow(), position.getColumn() + y_offset);
+            while (isValidMove(position, target, board)) {
+                moves.add(new ChessMove(position, target, null));
+                if (board.getPiece(target) != null) {
+                    break;
                 }
-            }
-            while (y_offset + position.getColumn() <= 8 && (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)) == null)) {
-                moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn() + y_offset), null));
                 y_offset++;
-            }
-            if (y_offset + position.getColumn() <= 8) {
-                if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)) != null) {
-                    if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)).pieceColor != board.getPiece(position).pieceColor) {
-                        moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn() + y_offset), null));
-                    }
-                }
+                target = new ChessPosition(position.getRow(), position.getColumn() + y_offset);
             }
             x_offset = -1;
-            y_offset = -1;
-            while (x_offset + position.getRow() >= 1 && (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())) == null)) {
-                moves.add(new ChessMove(position, new ChessPosition(position.getRow() + x_offset, position.getColumn()), null));
+            target = new ChessPosition(position.getRow() + x_offset, position.getColumn());
+            while (isValidMove(position, target, board)) {
+                moves.add(new ChessMove(position, target, null));
+                if (board.getPiece(target) != null) {
+                    break;
+                }
                 x_offset--;
+                target = new ChessPosition(position.getRow() + x_offset, position.getColumn());
             }
-            if (x_offset + position.getRow() >= 1) {
-                if (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())) != null) {
-                    if (board.getPiece(new ChessPosition(position.getRow() + x_offset, position.getColumn())).pieceColor != board.getPiece(position).pieceColor) {
-                        moves.add(new ChessMove(position, new ChessPosition(position.getRow() + x_offset, position.getColumn()), null));
-                    }
+            y_offset = -1;
+            target = new ChessPosition(position.getRow(), position.getColumn() + y_offset);
+            while (isValidMove(position, target, board)) {
+                moves.add(new ChessMove(position, target, null));
+                if (board.getPiece(target) != null) {
+                    break;
                 }
-            }
-            while (y_offset + position.getColumn() >= 1 && (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)) == null)) {
-                moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn() + y_offset), null));
                 y_offset--;
-            }
-            if (y_offset + position.getColumn() >= 1) {
-                if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)) != null) {
-                    if (board.getPiece(new ChessPosition(position.getRow(), position.getColumn() + y_offset)).pieceColor != board.getPiece(position).pieceColor) {
-                        moves.add(new ChessMove(position, new ChessPosition(position.getRow(), position.getColumn() + y_offset), null));
-                    }
-                }
+                target = new ChessPosition(position.getRow(), position.getColumn() + y_offset);
             }
             return moves;
         }
