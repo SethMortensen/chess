@@ -76,6 +76,45 @@ public class ChessPiece {
         return "Color: " + pieceColor + "\nType: " + type;
     }
 
+    static class KingMoveStrategy implements ChessPiece.MoveStrategy {
+        @Override
+        public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
+            Collection<ChessMove> moves = new ArrayList<>();
+            int[][] offsets = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+
+            for (int[] offset : offsets) {
+                ChessPosition target = new ChessPosition(position.getRow() + offset[0], position.getColumn() + offset[1]);
+                if (isValidMove(position, target, board)) {
+                    moves.add(new ChessMove(position, target, null));
+                }
+            }
+            return moves;
+        }
+    }
+
+    static class BishopMoveStrategy implements ChessPiece.MoveStrategy {
+        @Override
+        public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
+            Collection<ChessMove> moves = new ArrayList<>();
+            int[][] offsets = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+            int multiplier = 1;
+            for (int[] offset : offsets) {
+                ChessPosition target = new ChessPosition(position.getRow() + offset[0], position.getColumn() + offset[1]);
+                while (isValidMove(position, target, board)) {
+                    moves.add(new ChessMove(position, target, null));
+                    if (board.getPiece(target) != null) {
+                        break;
+                    }
+                    multiplier++;
+                    target = new ChessPosition(position.getRow() + (offset[0] * multiplier), position.getColumn() + (offset[1] * multiplier));
+
+                }
+                multiplier = 1;
+            }
+            return moves;
+        }
+    }
+
     static class KnightMoveStrategy implements ChessPiece.MoveStrategy {
         @Override
         public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
@@ -96,45 +135,19 @@ public class ChessPiece {
         @Override
         public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
             Collection<ChessMove> moves = new ArrayList<>();
-            int x_offset = 1;
-            ChessPosition target = new ChessPosition(position.getRow() + x_offset, position.getColumn());
-            while (isValidMove(position, target, board)) {
-                moves.add(new ChessMove(position, target, null));
-                if (board.getPiece(target) != null) {
-                    break;
+            int[][] offsets = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+            int multiplier = 1;
+            for (int[] offset : offsets) {
+                ChessPosition target = new ChessPosition(position.getRow() + offset[0], position.getColumn() + offset[1]);
+                while (isValidMove(position, target, board)) {
+                    moves.add(new ChessMove(position, target, null));
+                    if (board.getPiece(target) != null) {
+                        break;
+                    }
+                    multiplier++;
+                    target = new ChessPosition(position.getRow() + (offset[0] * multiplier), position.getColumn() + (offset[1] * multiplier));
                 }
-                x_offset++;
-                target = new ChessPosition(position.getRow() + x_offset, position.getColumn());
-            }
-            int y_offset = 1;
-            target = new ChessPosition(position.getRow(), position.getColumn() + y_offset);
-            while (isValidMove(position, target, board)) {
-                moves.add(new ChessMove(position, target, null));
-                if (board.getPiece(target) != null) {
-                    break;
-                }
-                y_offset++;
-                target = new ChessPosition(position.getRow(), position.getColumn() + y_offset);
-            }
-            x_offset = -1;
-            target = new ChessPosition(position.getRow() + x_offset, position.getColumn());
-            while (isValidMove(position, target, board)) {
-                moves.add(new ChessMove(position, target, null));
-                if (board.getPiece(target) != null) {
-                    break;
-                }
-                x_offset--;
-                target = new ChessPosition(position.getRow() + x_offset, position.getColumn());
-            }
-            y_offset = -1;
-            target = new ChessPosition(position.getRow(), position.getColumn() + y_offset);
-            while (isValidMove(position, target, board)) {
-                moves.add(new ChessMove(position, target, null));
-                if (board.getPiece(target) != null) {
-                    break;
-                }
-                y_offset--;
-                target = new ChessPosition(position.getRow(), position.getColumn() + y_offset);
+                multiplier = 1;
             }
             return moves;
         }
@@ -245,7 +258,13 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        if (board.getPiece(myPosition).type == ChessPiece.PieceType.KNIGHT) {
+        if (board.getPiece(myPosition).type == ChessPiece.PieceType.KING) {
+            MoveStrategy strategy = new KingMoveStrategy();
+            return strategy.getValidMoves(myPosition, board);
+        } else if (board.getPiece(myPosition).type == ChessPiece.PieceType.BISHOP) {
+            MoveStrategy strategy = new BishopMoveStrategy();
+            return strategy.getValidMoves(myPosition, board);
+        } else if (board.getPiece(myPosition).type == ChessPiece.PieceType.KNIGHT) {
             MoveStrategy strategy = new KnightMoveStrategy();
             return strategy.getValidMoves(myPosition, board);
         } else if (board.getPiece(myPosition).type == ChessPiece.PieceType.ROOK) {
