@@ -153,6 +153,18 @@ public class ChessPiece {
         }
     }
 
+    static class QueenMoveStrategy implements ChessPiece.MoveStrategy {
+        @Override
+        public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
+            MoveStrategy bishopStrategy = new BishopMoveStrategy();
+            MoveStrategy rookStrategy = new RookMoveStrategy();
+            Collection<ChessMove> moves = bishopStrategy.getValidMoves(position, board);
+            Collection<ChessMove> rookMoves = rookStrategy.getValidMoves(position, board);
+            moves.addAll(rookMoves);
+            return moves;
+        }
+    }
+
     static class PawnMoveStrategy implements ChessPiece.MoveStrategy {
         @Override
         public Collection<ChessMove> getValidMoves(ChessPosition position, ChessBoard board) {
@@ -269,6 +281,9 @@ public class ChessPiece {
             return strategy.getValidMoves(myPosition, board);
         } else if (board.getPiece(myPosition).type == ChessPiece.PieceType.ROOK) {
             MoveStrategy strategy = new RookMoveStrategy();
+            return strategy.getValidMoves(myPosition, board);
+        } else if (board.getPiece(myPosition).type == ChessPiece.PieceType.QUEEN) {
+            MoveStrategy strategy = new QueenMoveStrategy();
             return strategy.getValidMoves(myPosition, board);
         } else if (board.getPiece(myPosition).type == ChessPiece.PieceType.PAWN) {
             MoveStrategy strategy = new PawnMoveStrategy();
