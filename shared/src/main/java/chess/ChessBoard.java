@@ -11,9 +11,13 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    private final ChessPiece[][] board = new ChessPiece[9][9];
+    private ChessPiece[][] board = new ChessPiece[9][9];
     public ChessBoard() {
 
+    }
+
+    public ChessBoard(ChessBoard other) {
+        this.board = other.board;
     }
 
     /**
@@ -57,7 +61,7 @@ public class ChessBoard {
      */
     public void resetBoard() {
         for (int i = 1; i < 9; i++) {
-            for (int j = 3; j < 6; j++) {
+            for (int j = 3; j < 7; j++) {
                 board[i][j] = null;
             }
         }

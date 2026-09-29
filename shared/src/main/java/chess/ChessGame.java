@@ -11,10 +11,10 @@ import java.util.Collection;
 public class ChessGame {
 
     private TeamColor teamTurn = TeamColor.WHITE;
-    private ChessBoard gameBoard;
+    private ChessBoard gameBoard = new ChessBoard();
 
     public ChessGame() {
-
+        gameBoard.resetBoard();
     }
 
     /**
@@ -59,7 +59,19 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = gameBoard.getPiece(move.startPosition);
+        if (piece.getTeamColor() != getTeamTurn()) {
+            throw new InvalidMoveException("It is not your turn!");
+        }
+        Collection<ChessMove> valid_moves = validMoves(move.startPosition);
+        for (ChessMove valid_move : valid_moves) {
+            if (valid_move.equals(move)) {
+                gameBoard.addPiece(move.endPosition, piece);
+                gameBoard.addPiece(move.startPosition, null);
+                return;
+            }
+        }
+        throw new InvalidMoveException("Invalid move");
     }
 
     /**
