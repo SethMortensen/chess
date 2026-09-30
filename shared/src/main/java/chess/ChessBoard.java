@@ -55,6 +55,35 @@ public class ChessBoard {
         return Arrays.deepHashCode(board);
     }
 
+    @Override
+    public String toString() {
+        String outputString = "|";
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                if (board[i][j] == null) {
+                    outputString += " |";
+                } else {
+                    switch (board[i][j].getPieceType()) {
+                        case KING:
+                            outputString += "K|";
+                        case QUEEN:
+                            outputString += "Q|";
+                        case ROOK:
+                            outputString += "R|";
+                        case KNIGHT:
+                            outputString += "N|";
+                        case BISHOP:
+                            outputString += "B|";
+                        case PAWN:
+                            outputString += "P|";
+                    }
+                }
+            }
+            outputString += "\n|";
+        }
+        return outputString;
+    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
