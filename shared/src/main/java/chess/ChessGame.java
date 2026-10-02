@@ -210,4 +210,9 @@ public class ChessGame {
     public int hashCode() {
         return Objects.hash(teamTurn, gameBoard);
     }
+
+    @Override
+    public String toString() {
+        return "It is " + teamTurn + "'s turn.\n" + gameBoard.toString();
+    }
 }
