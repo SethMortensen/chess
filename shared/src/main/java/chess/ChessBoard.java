@@ -17,7 +17,14 @@ public class ChessBoard {
     }
 
     public ChessBoard(ChessBoard other) {
-        this.board = other.board;
+        this.board = new ChessPiece[9][9];
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                if (other.board[i][j] != null) {
+                    this.board[i][j] = new ChessPiece(other.board[i][j]);
+                }
+            }
+        }
     }
 
     /**
@@ -57,31 +64,31 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        String outputString = "|";
-        for (int i = 1; i < 9; i++) {
-            for (int j = 1; j < 9; j++) {
+        StringBuilder outputString = new StringBuilder();
+        for (int i = 8; i > 0; i--) {
+            outputString.append("|");
+            for (int j = 8; j > 0; j--) {
                 if (board[i][j] == null) {
-                    outputString += " |";
+                    outputString.append(" |");
                 } else {
-                    switch (board[i][j].getPieceType()) {
-                        case KING:
-                            outputString += "K|";
-                        case QUEEN:
-                            outputString += "Q|";
-                        case ROOK:
-                            outputString += "R|";
-                        case KNIGHT:
-                            outputString += "N|";
-                        case BISHOP:
-                            outputString += "B|";
-                        case PAWN:
-                            outputString += "P|";
+                    if (board[i][j].getPieceType() == ChessPiece.PieceType.KING) {
+                        outputString.append("K|");
+                    } else if (board[i][j].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        outputString.append("Q|");
+                    } else if (board[i][j].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        outputString.append("B|");
+                    } else if (board[i][j].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        outputString.append("N|");
+                    } else if (board[i][j].getPieceType() == ChessPiece.PieceType.ROOK) {
+                        outputString.append("R|");
+                    } else if (board[i][j].getPieceType() == ChessPiece.PieceType.PAWN) {
+                        outputString.append("P|");
                     }
                 }
             }
-            outputString += "\n|";
+            outputString.append("\n");
         }
-        return outputString;
+        return outputString.toString();
     }
 
     /**
