@@ -72,17 +72,41 @@ public class ChessBoard {
                     outputString.append(" |");
                 } else {
                     if (board[i][j].getPieceType() == ChessPiece.PieceType.KING) {
-                        outputString.append("K|");
+                        if (board[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                            outputString.append("K|");
+                        } else {
+                            outputString.append("k|");
+                        }
                     } else if (board[i][j].getPieceType() == ChessPiece.PieceType.QUEEN) {
-                        outputString.append("Q|");
+                        if (board[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                            outputString.append("Q|");
+                        } else {
+                            outputString.append("q|");
+                        }
                     } else if (board[i][j].getPieceType() == ChessPiece.PieceType.BISHOP) {
-                        outputString.append("B|");
+                        if (board[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                            outputString.append("B|");
+                        } else {
+                            outputString.append("b|");
+                        }
                     } else if (board[i][j].getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                        outputString.append("N|");
+                        if (board[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                            outputString.append("N|");
+                        } else {
+                            outputString.append("n|");
+                        }
                     } else if (board[i][j].getPieceType() == ChessPiece.PieceType.ROOK) {
-                        outputString.append("R|");
+                        if (board[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                            outputString.append("R|");
+                        } else {
+                            outputString.append("r|");
+                        }
                     } else if (board[i][j].getPieceType() == ChessPiece.PieceType.PAWN) {
-                        outputString.append("P|");
+                        if (board[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                            outputString.append("P|");
+                        } else {
+                            outputString.append("p|");
+                        }
                     }
                 }
             }
