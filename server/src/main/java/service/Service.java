@@ -31,4 +31,9 @@ public class Service {
         AuthData authToken = authDAO.createAuth(user);
         return new LoginResult(user.username(), authToken.authToken());
     }
+
+    public static void logout(LogoutRequest request) throws Exception {
+        String authToken = request.authToken();
+        authDAO.deleteAuth(authToken);
+    }
 }

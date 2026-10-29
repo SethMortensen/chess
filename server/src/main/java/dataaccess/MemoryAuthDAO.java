@@ -34,7 +34,7 @@ public class MemoryAuthDAO implements AuthDAO {
                 return data;
             }
         }
-        throw new NotFoundException("Auth not found");
+        throw new UnauthorizedException("unauthorized");
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
@@ -44,6 +44,6 @@ public class MemoryAuthDAO implements AuthDAO {
                 return;
             }
         }
-        throw new DataAccessException("Auth not found");
+        throw new UnauthorizedException("unauthorized");
     }
 }
