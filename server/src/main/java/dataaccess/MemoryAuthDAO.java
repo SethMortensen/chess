@@ -34,7 +34,7 @@ public class MemoryAuthDAO implements AuthDAO {
                 return data;
             }
         }
-        throw new DataAccessException("Auth not found");
+        throw new NotFoundException("Auth not found");
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
