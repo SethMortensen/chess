@@ -26,4 +26,10 @@ public class OtherHandler {
         context.status(401);
         context.json(body);
     }
+
+    static void handleOtherException(Exception E, Context context) {
+        var body = new Gson().toJson(Map.of("message", String.format("Error: %s", E.getMessage())));
+        context.status(500);
+        context.json(body);
+    }
 }

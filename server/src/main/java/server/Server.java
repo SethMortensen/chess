@@ -13,10 +13,12 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
-        javalin.post("/user", RegisterHandler::handleRequest);
+        javalin.post("/user", RegisterHandler::handleRegister);
+        javalin.delete("/db", ClearHandler::handleClear);
         javalin.exception(AlreadyTakenException.class, OtherHandler::handleAlreadyTaken);
         javalin.exception(NotFoundException.class, OtherHandler::handleNotFound);
         javalin.exception(UnauthorizedException.class, OtherHandler::handleUnauthorized);
+        javalin.exception(Exception.class, OtherHandler::handleOtherException);
     }
 
     public int run(int desiredPort) {

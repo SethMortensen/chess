@@ -9,7 +9,7 @@ import java.util.Random;
 public class MemoryGameDAO implements GameDAO {
     private final ArrayList<GameData> games;
 
-    MemoryGameDAO(ArrayList<GameData> games) {
+    public MemoryGameDAO(ArrayList<GameData> games) {
         this.games = games;
     }
     public void clear() {
