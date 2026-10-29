@@ -10,28 +10,28 @@ public class MemoryUserDAO implements UserDAO {
         users.clear();
     }
 
-    public void createUser(UserData u) throws DataAccessException {
+    public void createUser(UserData u) throws Exception {
         if (users.contains(u)) {
-            throw new DataAccessException("User already exists");
+            throw new AlreadyTakenException("User already exists");
         }
         for (UserData user : users) {
             if (Objects.equals(user.username(), u.username())) {
-                throw new DataAccessException("Username already taken");
+                throw new AlreadyTakenException("Username already taken");
             }
             if (Objects.equals(user.email(), u.email())) {
-                throw new DataAccessException("Email already in use");
+                throw new AlreadyTakenException("Email already in use");
             }
         }
         users.add(u);
     }
 
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username, String password) throws Exception {
         for (UserData user : users) {
-            if (Objects.equals(user.username(), username)) {
+            if (Objects.equals(user.username(), username) && (Objects.equals(user.password(), password))) {
                 return user;
             }
         }
-        throw new DataAccessException("User not found");
+        throw new NotFoundException("User not found");
     }
 
 }

@@ -12,10 +12,10 @@ public class MemoryGameDAO implements GameDAO {
         games.clear();
     }
 
-    public void createGame(String gameName) throws DataAccessException {
+    public void createGame(String gameName) throws Exception {
         for (GameData game : games) {
             if (Objects.equals(gameName, game.gameName())) {
-                throw new DataAccessException("Game already exists");
+                throw new AlreadyTakenException("Game already exists");
             }
         }
         Random rand = new Random();
@@ -23,26 +23,26 @@ public class MemoryGameDAO implements GameDAO {
         games.add(new GameData(gameID, null, null, gameName, new ChessGame()));
     }
 
-    public GameData getGame(int gameID) throws DataAccessException {
+    public GameData getGame(int gameID) throws Exception {
         for (GameData game : games) {
             if (Objects.equals(gameID, game.gameID())) {
                 return game;
             }
         }
-        throw new DataAccessException("Game not found");
+        throw new NotFoundException("Game not found");
     }
 
     public ArrayList<GameData> listGames() {
         return games;
     }
 
-    public void updateGame(int gameID, GameData update) throws DataAccessException {
+    public void updateGame(int gameID, GameData update) throws Exception {
         for (GameData game : games) {
             if (Objects.equals(gameID, game.gameID())) {
                 game = update;
                 return;
             }
         }
-        throw new DataAccessException("Game not found");
+        throw new NotFoundException("Game not found");
     }
 }
