@@ -8,7 +8,7 @@ public interface AuthDAO {
 
     AuthData createAuth(UserData user);
 
-    AuthData getAuth(String authToken);
+    AuthData getAuth(String authToken) throws Exception;
 
-    void deleteAuth(AuthData auth);
+    void deleteAuth(String authToken) throws Exception;
 }
