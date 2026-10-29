@@ -12,6 +12,7 @@ public class Service {
     static MemoryUserDAO userDAO = new MemoryUserDAO(new ArrayList<>());
     static MemoryAuthDAO authDAO = new MemoryAuthDAO(new ArrayList<>());
     static MemoryGameDAO gameDAO = new MemoryGameDAO(new ArrayList<>());
+
     public static RegisterResult register(RegisterRequest registerRequest) throws Exception {
         UserData user = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
         userDAO.createUser(user);
@@ -23,5 +24,11 @@ public class Service {
         userDAO.clear();
         authDAO.clear();
         gameDAO.clear();
+    }
+
+    public static LoginResult login(LoginRequest request) throws Exception {
+        UserData user = userDAO.getUser(request.username(), request.password());
+        AuthData authToken = authDAO.createAuth(user);
+        return new LoginResult(user.username(), authToken.authToken());
     }
 }

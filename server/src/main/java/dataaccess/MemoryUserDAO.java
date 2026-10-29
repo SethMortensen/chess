@@ -36,8 +36,11 @@ public class MemoryUserDAO implements UserDAO {
             throw new NotFoundException("bad request");
         }
         for (UserData user : users) {
-            if (Objects.equals(user.username(), username) && (Objects.equals(user.password(), password))) {
-                return user;
+            if (Objects.equals(user.username(), username)) {
+                if (Objects.equals(user.password(), password)) {
+                    return user;
+                }
+                throw new UnauthorizedException("unauthorized");
             }
         }
         throw new NotFoundException("bad request");
