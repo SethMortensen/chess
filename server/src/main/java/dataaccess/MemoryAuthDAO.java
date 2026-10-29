@@ -9,7 +9,11 @@ import java.util.UUID;
 import java.util.ArrayList;
 
 public class MemoryAuthDAO implements AuthDAO {
-    ArrayList<AuthData> auths = new ArrayList<>();
+    private final ArrayList<AuthData> auths;
+
+    public MemoryAuthDAO(ArrayList<AuthData> auths) {
+        this.auths = auths;
+    }
     public void clear() {
         auths.clear();
     }

@@ -7,7 +7,11 @@ import java.util.Objects;
 import java.util.Random;
 
 public class MemoryGameDAO implements GameDAO {
-    ArrayList<GameData> games = new ArrayList<>();
+    private final ArrayList<GameData> games;
+
+    MemoryGameDAO(ArrayList<GameData> games) {
+        this.games = games;
+    }
     public void clear() {
         games.clear();
     }
