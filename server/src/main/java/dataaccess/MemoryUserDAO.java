@@ -12,14 +12,14 @@ public class MemoryUserDAO implements UserDAO {
 
     public void createUser(UserData u) throws Exception {
         if (users.contains(u)) {
-            throw new AlreadyTakenException("User already exists");
+            throw new AlreadyTakenException("already taken");
         }
         for (UserData user : users) {
             if (Objects.equals(user.username(), u.username())) {
-                throw new AlreadyTakenException("Username already taken");
+                throw new AlreadyTakenException("already taken");
             }
             if (Objects.equals(user.email(), u.email())) {
-                throw new AlreadyTakenException("Email already in use");
+                throw new AlreadyTakenException("already taken");
             }
         }
         users.add(u);
@@ -31,7 +31,7 @@ public class MemoryUserDAO implements UserDAO {
                 return user;
             }
         }
-        throw new NotFoundException("User not found");
+        throw new NotFoundException("bad request");
     }
 
 }
