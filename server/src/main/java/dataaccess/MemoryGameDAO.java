@@ -29,7 +29,7 @@ public class MemoryGameDAO implements GameDAO {
         }
         Random rand = new Random();
         int gameID = rand.nextInt(9999);
-        games.add(new GameData(gameID, "", "", gameName));
+        games.add(new GameData(gameID, null, null, gameName));
         return gameID;
     }
 
@@ -47,12 +47,8 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public void updateGame(int gameID, GameData update) throws Exception {
-        for (GameData game : games) {
-            if (Objects.equals(gameID, game.gameID())) {
-                game = update;
-                return;
-            }
-        }
-        throw new NotFoundException("bad request");
+        GameData game = getGame(gameID);
+        games.remove(game);
+        games.add(update);
     }
 }

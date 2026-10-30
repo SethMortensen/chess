@@ -12,7 +12,7 @@ public class ClearTests {
         RegisterRequest request = new RegisterRequest("username", "password", "email");
         RegisterResult result = register(request);
         Service.clear();
-        assertThrows(NotFoundException.class, () -> Service.userDAO.getUser("username", "password"));
+        assertThrows(UnauthorizedException.class, () -> Service.userDAO.getUser("username", "password"));
         assertThrows(UnauthorizedException.class, () -> Service.authDAO.getAuth(result.authToken()));
     }
 }

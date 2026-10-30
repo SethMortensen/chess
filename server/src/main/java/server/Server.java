@@ -19,6 +19,7 @@ public class Server {
         javalin.delete("/session", LogoutHandler::handleLogout);
         javalin.post("/game", CreateGameHandler::handleCreateGame);
         javalin.get("/game", ListGamesHandler::handleListGames);
+        javalin.put("/game", JoinGameHandler::handleJoinGame);
         javalin.exception(AlreadyTakenException.class, OtherHandler::handleAlreadyTaken);
         javalin.exception(NotFoundException.class, OtherHandler::handleNotFound);
         javalin.exception(UnauthorizedException.class, OtherHandler::handleUnauthorized);

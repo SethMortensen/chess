@@ -36,7 +36,7 @@ public class MemoryUserDAO implements UserDAO {
 
     public UserData getUser(String username, String password) throws Exception {
         if (users.isEmpty()) {
-            throw new NotFoundException("bad request");
+            throw new UnauthorizedException("unauthorized");
         }
         if (username == null || password == null) {
             throw new NotFoundException("bad request");
