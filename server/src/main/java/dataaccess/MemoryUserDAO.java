@@ -15,6 +15,9 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     public void createUser(UserData u) throws Exception {
+        if (u.username() == null || u.password() == null || u.email() == null) {
+            throw new NotFoundException("bad request");
+        }
         if (!users.isEmpty()) {
             if (users.contains(u)) {
                 throw new AlreadyTakenException("already taken");
@@ -35,6 +38,9 @@ public class MemoryUserDAO implements UserDAO {
         if (users.isEmpty()) {
             throw new NotFoundException("bad request");
         }
+        if (username == null || password == null) {
+            throw new NotFoundException("bad request");
+        }
         for (UserData user : users) {
             if (Objects.equals(user.username(), username)) {
                 if (Objects.equals(user.password(), password)) {
@@ -43,7 +49,7 @@ public class MemoryUserDAO implements UserDAO {
                 throw new UnauthorizedException("unauthorized");
             }
         }
-        throw new NotFoundException("bad request");
+        throw new UnauthorizedException("unauthorized");
     }
 
 }

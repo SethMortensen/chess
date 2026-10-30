@@ -1,6 +1,5 @@
 package dataaccess;
 
-import chess.ChessGame;
 import model.GameData;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -17,6 +16,9 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public int createGame(String gameName) throws Exception {
+        if (gameName == null) {
+            throw new NotFoundException("bad request");
+        }
         for (GameData game : games) {
             if (Objects.equals(game.gameName(), gameName)) {
                 throw new NotFoundException("bad request");

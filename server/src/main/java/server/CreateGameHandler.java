@@ -14,6 +14,6 @@ public class CreateGameHandler {
         var body = new Gson().fromJson(context.body(), CreateGameRequest.class);
         CreateGameResult result = Service.createGame(body);
         context.status(200);
-        context.json(new Gson().toJson(Integer.toString(result.gameID())));
+        context.json(new Gson().toJson(result));
     }
 }

@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.NotFoundException;
+import dataaccess.UnauthorizedException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static service.Service.register;
@@ -12,6 +13,6 @@ public class ClearTests {
         RegisterResult result = register(request);
         Service.clear();
         assertThrows(NotFoundException.class, () -> Service.userDAO.getUser("username", "password"));
-        assertThrows(NotFoundException.class, () -> Service.authDAO.getAuth(result.authToken()));
+        assertThrows(UnauthorizedException.class, () -> Service.authDAO.getAuth(result.authToken()));
     }
 }

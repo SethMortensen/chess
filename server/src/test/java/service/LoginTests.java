@@ -31,7 +31,7 @@ public class LoginTests {
         RegisterRequest regRequest = new RegisterRequest("username", "password", "email");
         register(regRequest);
         LoginRequest request = new LoginRequest("blubblub", "password");
-        assertThrows(NotFoundException.class, () -> login(request));
+        assertThrows(UnauthorizedException.class, () -> login(request));
         Service.clear();
     }
 }

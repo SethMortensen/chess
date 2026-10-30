@@ -30,5 +30,6 @@ public class CreateGameTests {
         register(regRequest);
         createGame(new CreateGameRequest("gameID"));
         assertThrows(NotFoundException.class, () -> createGame(new CreateGameRequest("gameID")));
+        clear();
     }
 }

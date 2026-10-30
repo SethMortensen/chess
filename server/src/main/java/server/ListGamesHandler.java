@@ -2,10 +2,8 @@ package server;
 
 import com.google.gson.Gson;
 import io.javalin.http.Context;
-import model.GameData;
 import service.ListGamesResult;
 import service.Service;
-import java.util.ArrayList;
 
 public class ListGamesHandler {
     static void handleListGames(Context context) throws Exception {
