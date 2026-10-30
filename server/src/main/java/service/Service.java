@@ -42,8 +42,11 @@ public class Service {
     }
 
     public static CreateGameResult createGame(CreateGameRequest request) throws Exception {
-
         int gameID = gameDAO.createGame(request.gameName());
         return new CreateGameResult(gameID);
+    }
+
+    public static ListGamesResult listGames() {
+        return new ListGamesResult(gameDAO.listGames());
     }
 }

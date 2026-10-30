@@ -27,7 +27,7 @@ public class MemoryGameDAO implements GameDAO {
         }
         Random rand = new Random();
         int gameID = rand.nextInt(9999);
-        games.add(new GameData(gameID, null, null, gameName, new ChessGame()));
+        games.add(new GameData(gameID, "", "", gameName));
         return gameID;
     }
 
