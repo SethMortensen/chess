@@ -15,7 +15,7 @@ public class RegisterTests {
     }
 
     @Test
-    public void negativeRegisterTest() throws Exception {
+    public void negativeRegisterTest() {
         RegisterRequest request = new RegisterRequest("username", "password", "email");
         assertThrows(AlreadyTakenException.class, () -> register(request), "did not throw exception when duplicate user made");
     }

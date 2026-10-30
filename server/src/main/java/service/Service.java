@@ -13,6 +13,10 @@ public class Service {
     static MemoryAuthDAO authDAO = new MemoryAuthDAO(new ArrayList<>());
     static MemoryGameDAO gameDAO = new MemoryGameDAO(new ArrayList<>());
 
+    public static void verifyAuth(String authToken) throws Exception {
+        authDAO.getAuth(authToken);
+    }
+
     public static RegisterResult register(RegisterRequest registerRequest) throws Exception {
         UserData user = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
         userDAO.createUser(user);
@@ -35,5 +39,11 @@ public class Service {
     public static void logout(LogoutRequest request) throws Exception {
         String authToken = request.authToken();
         authDAO.deleteAuth(authToken);
+    }
+
+    public static CreateGameResult createGame(CreateGameRequest request) throws Exception {
+
+        int gameID = gameDAO.createGame(request.gameName());
+        return new CreateGameResult(gameID);
     }
 }

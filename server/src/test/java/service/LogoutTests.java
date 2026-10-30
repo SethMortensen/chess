@@ -1,6 +1,5 @@
 package service;
 
-import dataaccess.NotFoundException;
 import dataaccess.UnauthorizedException;
 import org.junit.jupiter.api.Test;
 

@@ -16,15 +16,19 @@ public class MemoryGameDAO implements GameDAO {
         games.clear();
     }
 
-    public void createGame(String gameName) throws Exception {
+    public int createGame(String gameName) throws Exception {
         for (GameData game : games) {
-            if (Objects.equals(gameName, game.gameName())) {
-                throw new AlreadyTakenException("Game already exists");
+            if (Objects.equals(game.gameName(), gameName)) {
+                throw new NotFoundException("bad request");
             }
+        }
+        if (Objects.equals(gameName, "")) {
+            throw new NotFoundException("bad request");
         }
         Random rand = new Random();
         int gameID = rand.nextInt(9999);
         games.add(new GameData(gameID, null, null, gameName, new ChessGame()));
+        return gameID;
     }
 
     public GameData getGame(int gameID) throws Exception {
@@ -33,7 +37,7 @@ public class MemoryGameDAO implements GameDAO {
                 return game;
             }
         }
-        throw new NotFoundException("Game not found");
+        throw new NotFoundException("bad request");
     }
 
     public ArrayList<GameData> listGames() {
@@ -47,6 +51,6 @@ public class MemoryGameDAO implements GameDAO {
                 return;
             }
         }
-        throw new NotFoundException("Game not found");
+        throw new NotFoundException("bad request");
     }
 }
