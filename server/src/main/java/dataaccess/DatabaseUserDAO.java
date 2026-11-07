@@ -23,12 +23,31 @@ public class DatabaseUserDAO implements UserDAO {
             throw new DataAccessException("User Database initialization unsuccessful.");
         }
     }
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        var conn = getConnection();
+        try {
+            conn.setCatalog("chess");
+            try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE users")) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to clear data");
+        }
     }
 
     public void createUser(UserData u) throws Exception {
-
+        var conn = getConnection();
+        try {
+            conn.setCatalog("chess");
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO users (username, password, email) VALUES(?, ?, ?)")) {
+                preparedStatement.setString(1, u.username());
+                preparedStatement.setString(2, u.password());
+                preparedStatement.setString(3, u.email());
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to create user");
+        }
     }
 
     public UserData getUser(String username, String password) throws Exception {
