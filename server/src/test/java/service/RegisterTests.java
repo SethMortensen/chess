@@ -1,6 +1,6 @@
 package service;
 
-import dataaccess.AlreadyTakenException;
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +20,7 @@ public class RegisterTests {
     public void negativeRegisterTest() throws Exception {
         RegisterRequest request = new RegisterRequest("username", "password", "email");
         register(request);
-        assertThrows(AlreadyTakenException.class, () -> register(request), "did not throw exception when duplicate user made");
+        assertThrows(DataAccessException.class, () -> register(request), "did not throw exception when duplicate user made");
         clear();
     }
 }

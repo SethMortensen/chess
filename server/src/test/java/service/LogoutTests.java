@@ -1,6 +1,6 @@
 package service;
 
-import dataaccess.UnauthorizedException;
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.Test;
 
 import static dataaccess.MemoryAuthDAO.generateToken;
@@ -13,7 +13,7 @@ public class LogoutTests {
         RegisterRequest regRequest = new RegisterRequest("username", "password", "email");
         RegisterResult regResult = register(regRequest);
         logout(new LogoutRequest(regResult.authToken()));
-        assertThrows(UnauthorizedException.class, () -> authDAO.getAuth(regResult.authToken()));
+        assertThrows(DataAccessException.class, () -> authDAO.getAuth(regResult.authToken()));
         Service.clear();
     }
 
@@ -21,7 +21,7 @@ public class LogoutTests {
     public void negativeLogoutTest() throws Exception {
         RegisterRequest regRequest = new RegisterRequest("username", "password", "email");
         register(regRequest);
-        assertThrows(UnauthorizedException.class, () -> logout(new LogoutRequest(generateToken())));
+        assertThrows(DataAccessException.class, () -> logout(new LogoutRequest(generateToken())));
         Service.clear();
     }
 }

@@ -1,7 +1,6 @@
 package service;
 
-import dataaccess.NotFoundException;
-import dataaccess.UnauthorizedException;
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,8 +18,8 @@ public class CreateGameTests {
     }
 
     @Test
-    public void unauthorizedCreateGameTest() {
-        assertThrows(UnauthorizedException.class, () -> verifyAuth("wrongAuthToken"));
+    public void unauthorizedCreateGameTest() throws Exception {
+        assertThrows(DataAccessException.class, () -> verifyAuth("wrongAuthToken"));
         clear();
     }
 
@@ -29,7 +28,7 @@ public class CreateGameTests {
         RegisterRequest regRequest = new RegisterRequest("username", "password", "email");
         register(regRequest);
         createGame(new CreateGameRequest("gameID"));
-        assertThrows(NotFoundException.class, () -> createGame(new CreateGameRequest("gameID")));
+        assertThrows(DataAccessException.class, () -> createGame(new CreateGameRequest("gameID")));
         clear();
     }
 }

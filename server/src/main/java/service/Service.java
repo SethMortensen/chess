@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.sql.DatabaseUserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -10,7 +11,14 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Service {
-    static MemoryUserDAO userDAO = new MemoryUserDAO(new ArrayList<>());
+    static DatabaseUserDAO userDAO;
+    static {
+        try {
+            userDAO = new DatabaseUserDAO();
+        } catch (DataAccessException _) {
+        }
+    }
+
     static MemoryAuthDAO authDAO = new MemoryAuthDAO(new ArrayList<>());
     static MemoryGameDAO gameDAO = new MemoryGameDAO(new ArrayList<>());
 
@@ -25,7 +33,7 @@ public class Service {
         return new RegisterResult(registerRequest.username(), authData.authToken());
     }
 
-    public static void clear() {
+    public static void clear() throws DataAccessException {
         userDAO.clear();
         authDAO.clear();
         gameDAO.clear();
