@@ -9,6 +9,7 @@ import static service.Service.*;
 public class CreateGameTests {
     @Test
     public void positiveCreateGameTest() throws Exception {
+        clear();
         RegisterRequest regRequest = new RegisterRequest("username", "password", "email");
         RegisterResult regResult = register(regRequest);
         verifyAuth(regResult.authToken());
@@ -19,12 +20,14 @@ public class CreateGameTests {
 
     @Test
     public void unauthorizedCreateGameTest() throws Exception {
+        clear();
         assertThrows(DataAccessException.class, () -> verifyAuth("wrongAuthToken"));
         clear();
     }
 
     @Test
     public void badRequestCreateGameTest() throws Exception {
+        clear();
         RegisterRequest regRequest = new RegisterRequest("username", "password", "email");
         register(regRequest);
         createGame(new CreateGameRequest("gameID"));

@@ -10,6 +10,7 @@ import static service.Service.*;
 public class LogoutTests {
     @Test
     public void positiveLogoutTest() throws Exception {
+        Service.clear();
         RegisterRequest regRequest = new RegisterRequest("username", "password", "email");
         RegisterResult regResult = register(regRequest);
         logout(new LogoutRequest(regResult.authToken()));
@@ -19,6 +20,7 @@ public class LogoutTests {
 
     @Test
     public void negativeLogoutTest() throws Exception {
+        Service.clear();
         RegisterRequest regRequest = new RegisterRequest("username", "password", "email");
         register(regRequest);
         assertThrows(DataAccessException.class, () -> logout(new LogoutRequest(generateToken())));

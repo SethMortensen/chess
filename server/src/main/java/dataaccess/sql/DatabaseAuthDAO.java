@@ -66,12 +66,15 @@ public class DatabaseAuthDAO implements AuthDAO {
 
     public void deleteAuth(String authToken) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement("DELETE authToken, username FROM auths WHERE authToken=?")) {
+            try (PreparedStatement ps = conn.prepareStatement("DELETE FROM auths WHERE authToken=?")) {
                 ps.setString(1, authToken);
-                ps.executeUpdate();
+                int Result = ps.executeUpdate();
+                if (Result == 0) {
+                    throw new UnauthorizedException("unauthorized");
+                }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("unable to update database");
+            throw new DataAccessException(String.format("unable to update database: %s", e.getMessage()));
         }
     }
 
