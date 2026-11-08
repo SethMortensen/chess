@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.sql.DatabaseAuthDAO;
 import dataaccess.sql.DatabaseUserDAO;
 import model.AuthData;
 import model.GameData;
@@ -18,8 +19,13 @@ public class Service {
         } catch (DataAccessException _) {
         }
     }
-
-    static MemoryAuthDAO authDAO = new MemoryAuthDAO(new ArrayList<>());
+    static DatabaseAuthDAO authDAO;
+    static {
+        try {
+            authDAO = new DatabaseAuthDAO();
+        } catch (DataAccessException _) {
+        }
+    }
     static MemoryGameDAO gameDAO = new MemoryGameDAO(new ArrayList<>());
 
     public static void verifyAuth(String authToken) throws Exception {

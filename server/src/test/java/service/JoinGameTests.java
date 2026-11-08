@@ -47,7 +47,6 @@ public class JoinGameTests {
     @Test
     public void unauthorizedJoinGameTest() throws Exception {
         clear();
-        RegisterRequest regRequest = new RegisterRequest("username", "password", "email");
         CreateGameResult createResult = createGame(new CreateGameRequest("newGame"));
         JoinGameRequest request = new JoinGameRequest(ChessGame.TeamColor.WHITE, createResult.gameID());
         assertThrows(DataAccessException.class, () -> joinGame(request, "badAuth"));

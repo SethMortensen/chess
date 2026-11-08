@@ -5,7 +5,6 @@ import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
-import java.util.Objects;
 
 
 public class DatabaseUserDAO implements UserDAO {
