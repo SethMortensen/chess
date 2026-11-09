@@ -14,5 +14,6 @@ public class ClearTests {
         Service.clear();
         assertThrows(DataAccessException.class, () -> Service.userDAO.getUser("username", "password"));
         assertThrows(DataAccessException.class, () -> Service.authDAO.getAuth(result.authToken()));
+        assertThrows(DataAccessException.class, () -> Service.gameDAO.getGame(1));
     }
 }
