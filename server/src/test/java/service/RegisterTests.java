@@ -10,6 +10,7 @@ import static service.Service.register;
 public class RegisterTests {
     @Test
     public void positiveRegisterTest() throws Exception {
+        clear();
         RegisterRequest request = new RegisterRequest("username", "password", "email");
         String expected = "username";
         assertEquals(expected, register(request).username(), "unexpected username");
@@ -18,6 +19,7 @@ public class RegisterTests {
 
     @Test
     public void negativeRegisterTest() throws Exception {
+        clear();
         RegisterRequest request = new RegisterRequest("username", "password", "email");
         register(request);
         assertThrows(DataAccessException.class, () -> register(request), "did not throw exception when duplicate user made");

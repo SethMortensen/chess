@@ -3,30 +3,27 @@ package service;
 import chess.ChessGame;
 import dataaccess.*;
 import dataaccess.sql.DatabaseAuthDAO;
+import dataaccess.sql.DatabaseGameDAO;
 import dataaccess.sql.DatabaseUserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Service {
+    static DatabaseAuthDAO authDAO;
+    static DatabaseGameDAO gameDAO;
     static DatabaseUserDAO userDAO;
     static {
         try {
             userDAO = new DatabaseUserDAO();
-        } catch (DataAccessException _) {
-        }
-    }
-    static DatabaseAuthDAO authDAO;
-    static {
-        try {
             authDAO = new DatabaseAuthDAO();
-        } catch (DataAccessException _) {
+            gameDAO = new DatabaseGameDAO();
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
         }
     }
-    static MemoryGameDAO gameDAO = new MemoryGameDAO(new ArrayList<>());
 
     public static void verifyAuth(String authToken) throws Exception {
         authDAO.getAuth(authToken);
@@ -61,7 +58,7 @@ public class Service {
         return new CreateGameResult(gameID);
     }
 
-    public static ListGamesResult listGames() {
+    public static ListGamesResult listGames() throws DataAccessException {
         return new ListGamesResult(gameDAO.listGames());
     }
 
@@ -74,12 +71,12 @@ public class Service {
             if (!Objects.equals(game.whiteUsername(), null)) {
                 throw new AlreadyTakenException("already taken");
             }
-            newGame = new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName());
+            newGame = new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game());
         } else if (Objects.equals(request.playerColor(), ChessGame.TeamColor.BLACK)){
             if (!Objects.equals(game.blackUsername(), null) && !Objects.equals(game.blackUsername(), "")) {
                 throw new AlreadyTakenException("already taken");
             }
-            newGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName());
+            newGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
         } else {
             throw new NotFoundException("bad request");
         }

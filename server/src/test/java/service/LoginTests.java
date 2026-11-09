@@ -15,6 +15,7 @@ public class LoginTests {
         register(regRequest);
         LoginRequest request = new LoginRequest("username", "password");
         assertEquals("username", login(request).username());
+        Service.clear();
     }
 
     @Test
@@ -24,6 +25,7 @@ public class LoginTests {
         register(regRequest);
         LoginRequest request = new LoginRequest("username", "blubblub");
         assertThrows(DataAccessException.class, () -> login(request));
+        Service.clear();
     }
 
     @Test
@@ -33,5 +35,6 @@ public class LoginTests {
         register(regRequest);
         LoginRequest request = new LoginRequest("blubblub", "password");
         assertThrows(DataAccessException.class, () -> login(request));
+        Service.clear();
     }
 }

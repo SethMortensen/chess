@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -15,7 +16,7 @@ public class MemoryGameDAO implements GameDAO {
         games.clear();
     }
 
-    public int createGame(String gameName) throws Exception {
+    public int createGame(String gameName) throws DataAccessException {
         if (gameName == null) {
             throw new NotFoundException("bad request");
         }
@@ -29,7 +30,8 @@ public class MemoryGameDAO implements GameDAO {
         }
         Random rand = new Random();
         int gameID = rand.nextInt(9999);
-        games.add(new GameData(gameID, null, null, gameName));
+        ChessGame game = new ChessGame();
+        games.add(new GameData(gameID, null, null, gameName, game));
         return gameID;
     }
 
