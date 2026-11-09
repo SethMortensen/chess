@@ -56,7 +56,7 @@ public class DatabaseUserDAO implements UserDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("unable to read data: %s");
+            throw new UnauthorizedException("unauthorized");
         }
     }
 

@@ -43,7 +43,7 @@ public class DatabaseAuthDAO implements AuthDAO {
                 return new AuthData(token, user.username());
             }
         } catch (SQLException e) {
-            throw new DataAccessException("unable to update database");
+            throw new UnauthorizedException("unauthorized");
         }
     }
 
@@ -60,7 +60,7 @@ public class DatabaseAuthDAO implements AuthDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("unable to retrieve data");
+            throw new DataAccessException("unauthorized");
         }
     }
 

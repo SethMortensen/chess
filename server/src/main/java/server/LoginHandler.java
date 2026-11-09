@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.NotFoundException;
 import io.javalin.http.Context;
 import model.UserData;
 import service.LoginRequest;
@@ -10,6 +11,9 @@ import service.Service;
 public class LoginHandler {
     static void handleLogin(Context context) throws Exception {
         var body = new Gson().fromJson(context.body(), UserData.class);
+        if (body.username() == null || body.password() == null) {
+            throw new NotFoundException("bad request");
+        }
         LoginRequest request = new LoginRequest(body.username(), body.password());
         LoginResult result = Service.login(request);
         context.status(200);

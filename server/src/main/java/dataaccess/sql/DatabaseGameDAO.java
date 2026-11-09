@@ -3,10 +3,7 @@ package dataaccess.sql;
 import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccess.AlreadyTakenException;
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
-import dataaccess.GameDAO;
+import dataaccess.*;
 import model.GameData;
 
 import java.sql.Connection;
@@ -33,6 +30,9 @@ public class DatabaseGameDAO implements GameDAO {
     }
 
     public int createGame(String gameName) throws DataAccessException {
+        if (gameName == null) {
+            throw new NotFoundException("bad request");
+        }
         Random rand = new Random();
         int gameID = rand.nextInt(9999);
         ChessGame game = new ChessGame();
@@ -53,7 +53,7 @@ public class DatabaseGameDAO implements GameDAO {
                 return gameID;
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("unable to update database: %s", e.getMessage()));
+            throw new UnauthorizedException("unauthorized");
         }
     }
 
@@ -71,12 +71,13 @@ public class DatabaseGameDAO implements GameDAO {
                     ChessGame.TeamColor teamTurn = new Gson().fromJson(turnJson, ChessGame.TeamColor.class);
                     ChessBoard board = new Gson().fromJson(boardJson, ChessBoard.class);
                     ChessGame game = new ChessGame();
+                    game.setTeamTurn(teamTurn);
                     game.setBoard(board);
                     return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("unable to retrieve data");
+            throw new NotFoundException("bad request");
         }
     }
 
