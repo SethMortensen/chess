@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DatabaseAuthDAOTests {
     @Test
-    public void createAndGetAuthTests() throws Exception {
+    public void createAndGetAuthTest() throws Exception {
         DatabaseAuthDAO authDAO = new DatabaseAuthDAO();
         AuthData auth = authDAO.createAuth(new UserData("username", "password", "email"));
         assert(authDAO.getAuth(auth.authToken()).equals(auth));
