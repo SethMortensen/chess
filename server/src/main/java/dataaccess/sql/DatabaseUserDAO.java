@@ -23,6 +23,9 @@ public class DatabaseUserDAO implements UserDAO {
     }
 
     public void createUser(UserData u) throws Exception {
+        if (u.username() == null || u.password() == null || u.email() == null) {
+            throw new NotFoundException("bad request");
+        }
         var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         String hashedPassword = BCrypt.hashpw(u.password(), BCrypt.gensalt());
         try (Connection conn = DatabaseManager.getConnection()) {
@@ -41,6 +44,9 @@ public class DatabaseUserDAO implements UserDAO {
     }
 
     public UserData getUser(String username, String password) throws Exception {
+        if (username == null || password == null) {
+            throw new NotFoundException("bad request");
+        }
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT password, email FROM users WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {

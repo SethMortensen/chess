@@ -1,9 +1,6 @@
 package dataaccess.sql;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
-import dataaccess.UnauthorizedException;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 
@@ -33,6 +30,9 @@ public class DatabaseAuthDAO implements AuthDAO {
     }
 
     public AuthData createAuth(UserData user) throws DataAccessException {
+        if (user.username() == null || user.password() == null || user.email() == null) {
+            throw new NotFoundException("bad request");
+        }
         var statement = "INSERT INTO auths (authtoken, username) VALUES (?, ?)";
         String token = generateToken();
         try (Connection conn = DatabaseManager.getConnection()) {
@@ -48,6 +48,9 @@ public class DatabaseAuthDAO implements AuthDAO {
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
+        if (authToken == null) {
+            throw new NotFoundException("bad request");
+        }
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement("SELECT authToken, username FROM auths WHERE authToken=?")) {
                 ps.setString(1, authToken);
