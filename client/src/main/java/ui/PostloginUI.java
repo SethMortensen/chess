@@ -14,6 +14,10 @@ public class PostloginUI {
     }
 
     public static void listGame(int index, GameData game) {
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_BG_COLOR_LIGHT_GREY + index + ": " + EscapeSequences.SET_TEXT_COLOR_GREEN + "name: " + game.gameName() + "White: " + game.whiteUsername() + "Black: " + game.blackUsername() + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR);
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_BG_COLOR_LIGHT_GREY + index + ": " + EscapeSequences.SET_TEXT_COLOR_GREEN + "name: " + game.gameName() + " White: " + game.whiteUsername() + " Black: " + game.blackUsername() + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR);
+    }
+
+    public static void listNoGames() {
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + EscapeSequences.SET_BG_COLOR_LIGHT_GREY + "No games were found" + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR);
     }
 }

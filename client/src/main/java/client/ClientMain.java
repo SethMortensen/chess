@@ -29,6 +29,7 @@ public class ClientMain {
             String[] registerArgs = input.split(" ");
             if (registerArgs.length != 4) {
                 PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
+                return;
             }
             ServerFacade.register(registerArgs[1], registerArgs[2], registerArgs[3]);
             state = State.POSTLOGIN;
@@ -37,10 +38,13 @@ public class ClientMain {
             String[] loginArgs = input.split(" ");
             if (loginArgs.length != 3) {
                 PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
+                return;
             }
-            ServerFacade.login(loginArgs[1], loginArgs[2]);
-            state = State.POSTLOGIN;
-            System.out.println("Logged in as " + loginArgs[1]);
+            boolean success = ServerFacade.login(loginArgs[1], loginArgs[2]);
+            if (success) {
+                state = State.POSTLOGIN;
+                System.out.println("Logged in as " + loginArgs[1]);
+            }
         } else {
             PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
         }
@@ -50,12 +54,29 @@ public class ClientMain {
         if (input.equals("help") || input.equals("Help")) {
             PostloginUI.help();
         } else if (input.equals("quit") || input.equals("Quit")) {
+            ServerFacade.logout();
             state = State.QUIT;
         } else if (input.equals("logout") || input.equals("Logout")) {
             ServerFacade.logout();
             state = State.PRELOGIN;
         } else if (input.equals("list") || input.equals("List")) {
             ServerFacade.listGames();
+        } else if (input.startsWith("create ") || input.startsWith("Create ")) {
+            String[] createArgs = input.split(" ");
+            if (createArgs.length != 2) {
+                PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
+                return;
+            }
+            ServerFacade.createGame(createArgs[1]);
+        } else if (input.startsWith("join ") || input.startsWith("Join ")) {
+            String[] joinArgs = input.split(" ");
+            if (joinArgs.length != 3) {
+                PreloginUI.throwError("Invalid command. Type Help for a list of valid commmands");
+            }
+            if (joinArgs[2].equals("BLACK") || joinArgs[2].equals("WHITE")) {
+                ServerFacade.joinGame(joinArgs[1], joinArgs[2]);
+                state = State.GAMEPLAY;
+            }
         }
     }
 }
