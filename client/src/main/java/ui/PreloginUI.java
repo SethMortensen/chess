@@ -7,4 +7,8 @@ public class PreloginUI {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "quit " + EscapeSequences.SET_TEXT_COLOR_GREEN + "- to exit program" + EscapeSequences.RESET_TEXT_COLOR);
         System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + "help " + EscapeSequences.SET_TEXT_COLOR_GREEN + "- to view available commands" + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR);
     }
+
+    public static void throwError(String message) {
+        System.err.println(EscapeSequences.SET_TEXT_COLOR_RED + EscapeSequences.SET_BG_COLOR_LIGHT_GREY + message + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+    }
 }

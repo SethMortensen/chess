@@ -1,6 +1,7 @@
 package client;
 
 import ui.PreloginUI;
+import ui.PostloginUI;
 import java.util.Scanner;
 
 public class ClientMain {
@@ -14,8 +15,6 @@ public class ClientMain {
                 handlePreLogin(input);
             } else if (state == State.POSTLOGIN) {
                 handlePostLogin(input);
-            } else if (state == State.GAMEPLAY) {
-                handleGameplay(input);
             }
         }
         ServerFacade.quit();
@@ -29,7 +28,7 @@ public class ClientMain {
         } else if (input.startsWith("register ") || input.startsWith("Register ")) {
             String[] registerArgs = input.split(" ");
             if (registerArgs.length != 4) {
-                System.err.println("Invalid command. Type Help for a list of valid commands.");
+                PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
             }
             ServerFacade.register(registerArgs[1], registerArgs[2], registerArgs[3]);
             state = State.POSTLOGIN;
@@ -37,13 +36,26 @@ public class ClientMain {
         } else if (input.startsWith("login ") || input.startsWith("Login ")) {
             String[] loginArgs = input.split(" ");
             if (loginArgs.length != 3) {
-                System.err.println("Invalid command. Type Help for a list of valid commands.");
+                PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
             }
             ServerFacade.login(loginArgs[1], loginArgs[2]);
             state = State.POSTLOGIN;
             System.out.println("Logged in as " + loginArgs[1]);
         } else {
-            System.err.println("Invalid command. Type Help for a list of valid commands.");
+            PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
+        }
+    }
+
+    public static void handlePostLogin(String input) {
+        if (input.equals("help") || input.equals("Help")) {
+            PostloginUI.help();
+        } else if (input.equals("quit") || input.equals("Quit")) {
+            state = State.QUIT;
+        } else if (input.equals("logout") || input.equals("Logout")) {
+            ServerFacade.logout();
+            state = State.PRELOGIN;
+        } else if (input.equals("list") || input.equals("List")) {
+            ServerFacade.listGames();
         }
     }
 }

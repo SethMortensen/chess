@@ -1,6 +1,11 @@
 package client;
 
 import com.google.gson.Gson;
+import model.AuthData;
+import model.GameData;
+import service.ListGamesResult;
+import ui.PostloginUI;
+import ui.PreloginUI;
 
 import java.io.IOException;
 import java.net.URI;
@@ -8,10 +13,12 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ServerFacade {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
+    private static AuthData auth;
 
     public static void quit() {
         httpClient.close();
@@ -29,14 +36,16 @@ public class ServerFacade {
                     .build();
             var jsonResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (jsonResponse.statusCode() == 400) {
-                System.err.println("Username, Password, and Email are required.");
+                PreloginUI.throwError("Username, Password, and Email are required.");
             } else if (jsonResponse.statusCode() == 403) {
-                System.err.println("Username or Email already in use");
+                PreloginUI.throwError("Username or Email already in use");
             } else if (jsonResponse.statusCode() >= 500) {
-                System.err.println("An unknown error occurred");
+                PreloginUI.throwError("An unknown error occurred");
+            } else if (jsonResponse.statusCode() == 200) {
+                auth = new Gson().fromJson(jsonResponse.body(), AuthData.class);
             }
         } catch (URISyntaxException | IOException | InterruptedException e) {
-            System.err.print("An error occurred with the server");
+            PreloginUI.throwError("An error occurred with the server");
         }
     }
 
@@ -52,14 +61,67 @@ public class ServerFacade {
                     .build();
             var jsonResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (jsonResponse.statusCode() == 400) {
-                System.err.println("Username and Password are required");
+                PreloginUI.throwError("Username and Password are required");
             } else if (jsonResponse.statusCode() == 401) {
-                System.err.println("Incorrect Username or Password");
+                PreloginUI.throwError("Incorrect Username or Password");
             } else if (jsonResponse.statusCode() >= 500) {
-                System.err.println("An unknown error occurred");
+                PreloginUI.throwError("An unknown error occurred");
+            } else if (jsonResponse.statusCode() == 200) {
+                auth = new Gson().fromJson(jsonResponse.body(), AuthData.class);
             }
         } catch (URISyntaxException | IOException | InterruptedException e) {
-            System.err.print("An error occurred with the server");
+            PreloginUI.throwError("An error occurred with the server");
+        }
+    }
+
+    public static void logout() {
+        String urlString = "http://localhost:8080/session";
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(urlString))
+                    .timeout(java.time.Duration.ofMillis(5000))
+                    .DELETE()
+                    .header("authorization", auth.authToken())
+                    .build();
+            var jsonResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (jsonResponse.statusCode() == 401) {
+                PreloginUI.throwError("You must be logged in to logout");
+            } else if (jsonResponse.statusCode() >= 500) {
+                PreloginUI.throwError("An unknown error occurred");
+            } else if (jsonResponse.statusCode() == 200) {
+                auth = null;
+            }
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            PreloginUI.throwError("An error occurred with the server");
+        }
+    }
+
+    public static void listGames() {
+        String urlString = "http://localhost:8080/game";
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(urlString))
+                    .timeout(java.time.Duration.ofMillis(5000))
+                    .GET()
+                    .header("authorization", auth.authToken())
+                    .build();
+            var jsonResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (jsonResponse.statusCode() == 401) {
+                PreloginUI.throwError("You must be logged in to list games");
+            } else if (jsonResponse.statusCode() >= 500) {
+                PreloginUI.throwError("An unknown error occurred");
+            } else if (jsonResponse.statusCode() == 200) {
+                if (!jsonResponse.body().isEmpty()) {
+                    var response = new Gson().fromJson(jsonResponse.body(), ListGamesResult.class);
+                    int index = 1;
+                    for (GameData game : response.games()) {
+                        PostloginUI.listGame(index, game);
+                        index++;
+                    }
+                }
+            }
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            PreloginUI.throwError("An error occurred with the server");
         }
     }
 }
