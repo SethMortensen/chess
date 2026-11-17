@@ -111,7 +111,7 @@ public class GameplayUI {
                 squareColor = rowStarterColor;
             }
             System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED);
-            System.out.print("   h  g  f  e  d  c  b  a   \n" + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+            System.out.print("    h   g   f   e   d   c   b   a    \n" + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
         } else {
             PreloginUI.throwError("Invalid player color. Type Help for a list of valid commands");
         }

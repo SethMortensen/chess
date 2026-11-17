@@ -21,17 +21,22 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class ServerFacade {
-    private static final HttpClient httpClient = HttpClient.newHttpClient();
-    private static AuthData auth;
-    private static final ArrayList<gameIDMap> idList = new ArrayList<>();
-    private static int gameCount = 0;
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private AuthData auth;
+    private final ArrayList<gameIDMap> idList = new ArrayList<>();
+    private int gameCount = 0;
+    int port;
 
-    public static void quit() {
+    public ServerFacade(int port) {
+        this.port = port;
+    }
+
+    public void quit() {
         httpClient.close();
     }
 
-    public static void register(String username, String password, String email) {
-        String urlString = "http://localhost:8080/user";
+    public boolean register(String username, String password, String email) {
+        String urlString = String.format("http://localhost:%d/user", port);
         var body = Map.of("username", username, "password", password, "email", email);
         var jsonBody = new Gson().toJson(body);
         try {
@@ -49,13 +54,15 @@ public class ServerFacade {
                 PreloginUI.throwError("An unknown error occurred");
             } else if (jsonResponse.statusCode() == 200) {
                 auth = new Gson().fromJson(jsonResponse.body(), AuthData.class);
+                return true;
             }
         } catch (URISyntaxException | IOException | InterruptedException e) {
             PreloginUI.throwError("An error occurred with the server");
         }
+        return false;
     }
 
-    public static boolean login(String username, String password) {
+    public boolean login(String username, String password) {
         String urlString = "http://localhost:8080/session";
         var body = Map.of("username", username, "password", password);
         var jsonBody = new Gson().toJson(body);
@@ -82,7 +89,7 @@ public class ServerFacade {
         return false;
     }
 
-    public static void logout() {
+    public void logout() {
         String urlString = "http://localhost:8080/session";
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -104,7 +111,7 @@ public class ServerFacade {
         }
     }
 
-    public static void listGames() {
+    public void listGames() {
         String urlString = "http://localhost:8080/game";
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -139,7 +146,7 @@ public class ServerFacade {
         }
     }
 
-    public static void createGame(String gameName) {
+    public void createGame(String gameName) {
         String urlString = "http://localhost:8080/game";
         var body = Map.of("gameName", gameName);
         var jsonBody = new Gson().toJson(body);
@@ -167,7 +174,7 @@ public class ServerFacade {
         }
     }
 
-    public static ChessBoard joinGame(String gameID, String color) {
+    public ChessBoard joinGame(String gameID, String color) {
         String urlString = "http://localhost:8080/game";
         int serverGameID = -1;
         for (gameIDMap map : idList) {
@@ -209,7 +216,7 @@ public class ServerFacade {
         return null;
     }
 
-    public static ChessBoard spectateGame(String gameID) {
+    public ChessBoard spectateGame(String gameID) {
         int serverGameID = -1;
         for (gameIDMap map : idList) {
             if (map.userGameID() == Integer.parseInt(gameID)) {
