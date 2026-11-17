@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessBoard;
 import com.google.gson.Gson;
 import dataaccess.UnauthorizedException;
 import io.javalin.http.Context;
@@ -14,7 +15,8 @@ public class JoinGameHandler {
         var header = new Gson().fromJson(context.header("authorization"), String.class);
         var body = new Gson().fromJson(context.body(), JoinGameRequest.class);
         JoinGameRequest request = new JoinGameRequest(body.playerColor(), body.gameID());
-        Service.joinGame(request, header);
+        ChessBoard board = Service.joinGame(request, header);
+        context.json(new Gson().toJson(board));
         context.status(200);
     }
 }
