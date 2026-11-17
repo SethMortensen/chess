@@ -32,7 +32,18 @@ public class ServerFacade {
     }
 
     public void quit() {
+        if (auth != null) {
+            logout();
+        }
         httpClient.close();
+    }
+
+    public void clear() {
+        try {
+            Service.clear();
+        } catch (DataAccessException e) {
+            System.err.println("Unable to clear data");
+        }
     }
 
     public boolean register(String username, String password, String email) {
@@ -63,7 +74,7 @@ public class ServerFacade {
     }
 
     public boolean login(String username, String password) {
-        String urlString = "http://localhost:8080/session";
+        String urlString = String.format("http://localhost:%d/session", port);
         var body = Map.of("username", username, "password", password);
         var jsonBody = new Gson().toJson(body);
         try {
@@ -90,7 +101,11 @@ public class ServerFacade {
     }
 
     public void logout() {
-        String urlString = "http://localhost:8080/session";
+        String urlString = String.format("http://localhost:%d/session", port);
+        if (auth == null) {
+            PreloginUI.throwError("You must be logged in to logout");
+            return;
+        }
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(urlString))
@@ -112,7 +127,7 @@ public class ServerFacade {
     }
 
     public void listGames() {
-        String urlString = "http://localhost:8080/game";
+        String urlString = String.format("http://localhost:%d/game", port);
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(urlString))
@@ -147,7 +162,7 @@ public class ServerFacade {
     }
 
     public void createGame(String gameName) {
-        String urlString = "http://localhost:8080/game";
+        String urlString = String.format("http://localhost:%d/game", port);
         var body = Map.of("gameName", gameName);
         var jsonBody = new Gson().toJson(body);
         try {
@@ -175,7 +190,7 @@ public class ServerFacade {
     }
 
     public ChessBoard joinGame(String gameID, String color) {
-        String urlString = "http://localhost:8080/game";
+        String urlString = String.format("http://localhost:%d/game", port);
         int serverGameID = -1;
         for (gameIDMap map : idList) {
             if (map.userGameID() == Integer.parseInt(gameID)) {

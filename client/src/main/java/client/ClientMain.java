@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class ClientMain {
     private static State state = State.PRELOGIN;
-    private static ServerFacade facade = new ServerFacade(8080);
+    private static final ServerFacade facade = new ServerFacade(8080);
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
