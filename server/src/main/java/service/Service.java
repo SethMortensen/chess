@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import dataaccess.*;
 import dataaccess.sql.DatabaseAuthDAO;
@@ -60,6 +61,11 @@ public class Service {
 
     public static ListGamesResult listGames() throws DataAccessException {
         return new ListGamesResult(gameDAO.listGames());
+    }
+
+    public static ChessBoard getBoardFromID(int gameID) throws DataAccessException {
+        GameData game = gameDAO.getGame(gameID);
+        return game.game().getBoard();
     }
 
     public static void joinGame(JoinGameRequest request, String authToken) throws Exception {

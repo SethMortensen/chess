@@ -1,5 +1,7 @@
 package client;
 
+import chess.ChessBoard;
+import ui.GameplayUI;
 import ui.PreloginUI;
 import ui.PostloginUI;
 import java.util.Scanner;
@@ -71,12 +73,23 @@ public class ClientMain {
         } else if (input.startsWith("join ") || input.startsWith("Join ")) {
             String[] joinArgs = input.split(" ");
             if (joinArgs.length != 3) {
-                PreloginUI.throwError("Invalid command. Type Help for a list of valid commmands");
+                PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
             }
             if (joinArgs[2].equals("BLACK") || joinArgs[2].equals("WHITE")) {
-                ServerFacade.joinGame(joinArgs[1], joinArgs[2]);
+                ChessBoard board = ServerFacade.joinGame(joinArgs[1], joinArgs[2]);
                 state = State.GAMEPLAY;
+                GameplayUI.drawBoard(board, joinArgs[2]);
+            } else {
+                PreloginUI.throwError("Invalid command. Please specify BLACK or WHITE; Type Help for a list of valid commands");
             }
+        } else if (input.startsWith("observe ") || input.startsWith("Observe ")) {
+            String[] observeArgs = input.split(" ");
+            if (observeArgs.length != 2) {
+                PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
+            }
+            ChessBoard board = ServerFacade.spectateGame(observeArgs[1]);
+            state = State.SPECTATOR;
+            GameplayUI.drawBoard(board, "WHITE");
         }
     }
 }

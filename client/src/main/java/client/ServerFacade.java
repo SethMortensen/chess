@@ -1,10 +1,13 @@
 package client;
 
+import chess.ChessBoard;
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import service.CreateGameResult;
 import service.ListGamesResult;
+import service.Service;
 import ui.PostloginUI;
 import ui.PreloginUI;
 
@@ -164,7 +167,7 @@ public class ServerFacade {
         }
     }
 
-    public static void joinGame(String gameID, String color) {
+    public static ChessBoard joinGame(String gameID, String color) {
         String urlString = "http://localhost:8080/game";
         int serverGameID = -1;
         for (gameIDMap map : idList) {
@@ -193,9 +196,35 @@ public class ServerFacade {
                 PreloginUI.throwError("Color already taken");
             } else if (jsonResponse.statusCode() >= 500) {
                 PreloginUI.throwError("An unknown error occurred");
+            } else if (jsonResponse.statusCode() == 200) {
+                return Service.getBoardFromID(serverGameID);
             }
         } catch(URISyntaxException | IOException | InterruptedException e) {
             PreloginUI.throwError("An error occurred with the server");
+            return null;
+        } catch(DataAccessException e) {
+            PreloginUI.throwError("Invalid Game ID");
+            return null;
+        }
+        return null;
+    }
+
+    public static ChessBoard spectateGame(String gameID) {
+        int serverGameID = -1;
+        for (gameIDMap map : idList) {
+            if (map.userGameID() == Integer.parseInt(gameID)) {
+                serverGameID = map.serverGameID();
+            }
+        }
+        if (serverGameID == -1) {
+            PreloginUI.throwError("Invalid Game ID");
+            return null;
+        }
+        try {
+            return Service.getBoardFromID(serverGameID);
+        } catch (DataAccessException e) {
+            PreloginUI.throwError("Invalid Game ID");
+            return null;
         }
     }
 }
