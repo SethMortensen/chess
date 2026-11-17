@@ -63,12 +63,7 @@ public class Service {
         return new ListGamesResult(gameDAO.listGames());
     }
 
-    public static ChessBoard getBoardFromID(int gameID) throws DataAccessException {
-        GameData game = gameDAO.getGame(gameID);
-        return game.game().getBoard();
-    }
-
-    public static void joinGame(JoinGameRequest request, String authToken) throws Exception {
+    public static ChessBoard joinGame(JoinGameRequest request, String authToken) throws Exception {
         verifyAuth(authToken);
         GameData game = gameDAO.getGame(request.gameID());
         GameData newGame;
@@ -87,5 +82,6 @@ public class Service {
             throw new NotFoundException("bad request");
         }
         gameDAO.updateGame(game.gameID(), newGame);
+        return game.game().getBoard();
     }
 }

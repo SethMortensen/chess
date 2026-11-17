@@ -2,13 +2,8 @@ package client;
 
 import chess.ChessBoard;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
-import service.CreateGameResult;
-import service.ListGamesResult;
-import service.Service;
-import ui.PostloginUI;
 import ui.PreloginUI;
 
 import java.io.IOException;
@@ -17,13 +12,11 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.Map;
 
 public class ServerFacade {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private AuthData auth;
-    private final ArrayList<gameIDMap> idList = new ArrayList<>();
     private int gameCount = 0;
     int port;
 
@@ -38,15 +31,7 @@ public class ServerFacade {
         httpClient.close();
     }
 
-    public void clear() {
-        try {
-            Service.clear();
-        } catch (DataAccessException e) {
-            System.err.println("Unable to clear data");
-        }
-    }
-
-    public boolean register(String username, String password, String email) {
+    public AuthData register(String username, String password, String email) {
         String urlString = String.format("http://localhost:%d/user", port);
         var body = Map.of("username", username, "password", password, "email", email);
         var jsonBody = new Gson().toJson(body);
@@ -65,15 +50,15 @@ public class ServerFacade {
                 PreloginUI.throwError("An unknown error occurred");
             } else if (jsonResponse.statusCode() == 200) {
                 auth = new Gson().fromJson(jsonResponse.body(), AuthData.class);
-                return true;
+                return auth;
             }
         } catch (URISyntaxException | IOException | InterruptedException e) {
             PreloginUI.throwError("An error occurred with the server");
         }
-        return false;
+        return null;
     }
 
-    public boolean login(String username, String password) {
+    public AuthData login(String username, String password) {
         String urlString = String.format("http://localhost:%d/session", port);
         var body = Map.of("username", username, "password", password);
         var jsonBody = new Gson().toJson(body);
@@ -92,12 +77,12 @@ public class ServerFacade {
                 PreloginUI.throwError("An unknown error occurred");
             } else if (jsonResponse.statusCode() == 200) {
                 auth = new Gson().fromJson(jsonResponse.body(), AuthData.class);
-                return true;
+                return auth;
             }
         } catch (URISyntaxException | IOException | InterruptedException e) {
             PreloginUI.throwError("An error occurred with the server");
         }
-        return false;
+        return null;
     }
 
     public void logout() {
@@ -126,7 +111,7 @@ public class ServerFacade {
         }
     }
 
-    public void listGames() {
+    public ListGamesResult listGames() {
         String urlString = String.format("http://localhost:%d/game", port);
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -144,24 +129,19 @@ public class ServerFacade {
                 if (!jsonResponse.body().isEmpty()) {
                     var response = new Gson().fromJson(jsonResponse.body(), ListGamesResult.class);
                     if (gameCount == 0) {
-                        PostloginUI.listNoGames();
+                        return null;
                     } else {
-                        for (GameData game : response.games()) {
-                            for (gameIDMap idMap : idList) {
-                                if (idMap.serverGameID() == game.gameID()) {
-                                    PostloginUI.listGame(idMap.userGameID(), game);
-                                }
-                            }
-                        }
+                        return response;
                     }
                 }
             }
         } catch (URISyntaxException | IOException | InterruptedException e) {
             PreloginUI.throwError("An error occurred with the server");
         }
+        return null;
     }
 
-    public void createGame(String gameName) {
+    public CreateGameResult createGame(String gameName) {
         String urlString = String.format("http://localhost:%d/game", port);
         var body = Map.of("gameName", gameName);
         var jsonBody = new Gson().toJson(body);
@@ -181,26 +161,17 @@ public class ServerFacade {
                 PreloginUI.throwError("An unknown error occurred");
             } else if (jsonResponse.statusCode() == 200) {
                 gameCount++;
-                var response = new Gson().fromJson(jsonResponse.body(), CreateGameResult.class);
-                idList.add(new gameIDMap(gameCount, response.gameID()));
+                return new Gson().fromJson(jsonResponse.body(), CreateGameResult.class);
             }
         } catch (URISyntaxException | IOException | InterruptedException e) {
             PreloginUI.throwError("An error occurred with the server");
         }
+        return null;
     }
 
-    public ChessBoard joinGame(String gameID, String color) {
+    public ChessBoard joinGame(int gameID, String color) {
         String urlString = String.format("http://localhost:%d/game", port);
-        int serverGameID = -1;
-        for (gameIDMap map : idList) {
-            if (map.userGameID() == Integer.parseInt(gameID)) {
-                serverGameID = map.serverGameID();
-            }
-        }
-        if (serverGameID == -1) {
-            PreloginUI.throwError("Invalid Game ID");
-        }
-        var body = Map.of("playerColor", color, "gameID", serverGameID);
+        var body = Map.of("playerColor", color, "gameID", gameID);
         var jsonBody = new Gson().toJson(body);
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -219,34 +190,22 @@ public class ServerFacade {
             } else if (jsonResponse.statusCode() >= 500) {
                 PreloginUI.throwError("An unknown error occurred");
             } else if (jsonResponse.statusCode() == 200) {
-                return Service.getBoardFromID(serverGameID);
+                return new Gson().fromJson(jsonResponse.body(), ChessBoard.class);
             }
         } catch(URISyntaxException | IOException | InterruptedException e) {
             PreloginUI.throwError("An error occurred with the server");
-            return null;
-        } catch(DataAccessException e) {
-            PreloginUI.throwError("Invalid Game ID");
             return null;
         }
         return null;
     }
 
-    public ChessBoard spectateGame(String gameID) {
-        int serverGameID = -1;
-        for (gameIDMap map : idList) {
-            if (map.userGameID() == Integer.parseInt(gameID)) {
-                serverGameID = map.serverGameID();
+    public ChessBoard spectateGame(int gameID) {
+        ListGamesResult games = listGames();
+        for (GameData game : games.games()) {
+            if (game.gameID() == gameID) {
+                return game.game().getBoard();
             }
         }
-        if (serverGameID == -1) {
-            PreloginUI.throwError("Invalid Game ID");
-            return null;
-        }
-        try {
-            return Service.getBoardFromID(serverGameID);
-        } catch (DataAccessException e) {
-            PreloginUI.throwError("Invalid Game ID");
-            return null;
-        }
+        return null;
     }
 }

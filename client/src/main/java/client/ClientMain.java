@@ -1,14 +1,20 @@
 package client;
 
 import chess.ChessBoard;
+import model.AuthData;
+import model.GameData;
 import ui.GameplayUI;
 import ui.PreloginUI;
 import ui.PostloginUI;
+
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ClientMain {
     private static State state = State.PRELOGIN;
     private static final ServerFacade facade = new ServerFacade(8080);
+    private static final ArrayList<gameIDMap> idList = new ArrayList<>();
+    private static int gameCount = 0;
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -35,8 +41,8 @@ public class ClientMain {
                 PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
                 return;
             }
-            boolean success = facade.register(registerArgs[1], registerArgs[2], registerArgs[3]);
-            if (success) {
+            AuthData auth = facade.register(registerArgs[1], registerArgs[2], registerArgs[3]);
+            if (auth != null) {
                 state = State.POSTLOGIN;
                 System.out.println("Logged in as " + registerArgs[1]);
             }
@@ -46,8 +52,8 @@ public class ClientMain {
                 PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
                 return;
             }
-            boolean success = facade.login(loginArgs[1], loginArgs[2]);
-            if (success) {
+            AuthData auth = facade.login(loginArgs[1], loginArgs[2]);
+            if (auth != null) {
                 state = State.POSTLOGIN;
                 System.out.println("Logged in as " + loginArgs[1]);
             }
@@ -66,21 +72,47 @@ public class ClientMain {
             facade.logout();
             state = State.PRELOGIN;
         } else if (input.equals("list") || input.equals("List")) {
-            facade.listGames();
+            ListGamesResult response = facade.listGames();
+            if (response == null) {
+                PostloginUI.listNoGames();
+                return;
+            }
+            for (GameData game : response.games()) {
+                for (gameIDMap idMap : idList) {
+                    if (idMap.serverGameID() == game.gameID()) {
+                        PostloginUI.listGame(idMap.userGameID(), game);
+                    }
+                }
+            }
         } else if (input.startsWith("create ") || input.startsWith("Create ")) {
             String[] createArgs = input.split(" ");
             if (createArgs.length != 2) {
                 PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
                 return;
             }
-            facade.createGame(createArgs[1]);
+            CreateGameResult response = facade.createGame(createArgs[1]);
+            if (response == null) {
+                return;
+            }
+            gameCount++;
+            idList.add(new gameIDMap(gameCount, response.gameID()));
         } else if (input.startsWith("join ") || input.startsWith("Join ")) {
             String[] joinArgs = input.split(" ");
             if (joinArgs.length != 3) {
                 PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
+                return;
             }
             if (joinArgs[2].equals("BLACK") || joinArgs[2].equals("WHITE")) {
-                ChessBoard board = facade.joinGame(joinArgs[1], joinArgs[2]);
+                int gameID = -1;
+                for (gameIDMap idMap : idList) {
+                    if (String.valueOf(idMap.userGameID()).equals(joinArgs[1])) {
+                        gameID = idMap.serverGameID();
+                    }
+                }
+                if (gameID == -1) {
+                    PreloginUI.throwError("Invalid game ID");
+                }
+                ChessBoard board = facade.joinGame(gameID, joinArgs[2]);
                 state = State.GAMEPLAY;
                 GameplayUI.drawBoard(board, joinArgs[2]);
             } else {
@@ -91,7 +123,16 @@ public class ClientMain {
             if (observeArgs.length != 2) {
                 PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
             }
-            ChessBoard board = facade.spectateGame(observeArgs[1]);
+            int gameID = -1;
+            for (gameIDMap idMap : idList) {
+                if (String.valueOf(idMap.userGameID()).equals(observeArgs[1])) {
+                    gameID = idMap.serverGameID();
+                }
+            }
+            if (gameID == -1) {
+                PreloginUI.throwError("Invalid game ID");
+            }
+            ChessBoard board = facade.spectateGame(gameID);
             state = State.SPECTATOR;
             GameplayUI.drawBoard(board, "WHITE");
         } else {
