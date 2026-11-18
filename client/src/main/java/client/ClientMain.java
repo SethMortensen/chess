@@ -2,7 +2,6 @@ package client;
 
 import chess.ChessBoard;
 import model.AuthData;
-import model.GameData;
 import ui.GameplayUI;
 import ui.PreloginUI;
 import ui.PostloginUI;
@@ -14,7 +13,7 @@ public class ClientMain {
     private static State state = State.PRELOGIN;
     private static final ServerFacade facade = new ServerFacade(8080);
     private static final ArrayList<gameIDMap> idList = new ArrayList<>();
-    private static int gameCount = 0;
+    private static int gameCount;
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -24,6 +23,15 @@ public class ClientMain {
             if (state == State.PRELOGIN) {
                 handlePreLogin(input);
             } else if (state == State.POSTLOGIN) {
+                ListGamesResult response = facade.listGames();
+                if (response == null) {
+                    gameCount = 0;
+                } else {
+                    gameCount = response.games().size();
+                    for (int i = 0; i < gameCount; i++) {
+                        idList.add(new gameIDMap(i + 1, response.games().get(i).gameID()));
+                    }
+                }
                 handlePostLogin(input);
             }
         }
@@ -75,13 +83,11 @@ public class ClientMain {
             ListGamesResult response = facade.listGames();
             if (response == null) {
                 PostloginUI.listNoGames();
-                return;
-            }
-            for (GameData game : response.games()) {
-                for (gameIDMap idMap : idList) {
-                    if (idMap.serverGameID() == game.gameID()) {
-                        PostloginUI.listGame(idMap.userGameID(), game);
-                    }
+            } else {
+                gameCount = response.games().size();
+                for (int i = 0; i < gameCount; i++) {
+                    idList.add(new gameIDMap(i + 1, response.games().get(i).gameID()));
+                    PostloginUI.listGame(i + 1, response.games().get(i));
                 }
             }
         } else if (input.startsWith("create ") || input.startsWith("Create ")) {
@@ -96,24 +102,37 @@ public class ClientMain {
             }
             gameCount++;
             idList.add(new gameIDMap(gameCount, response.gameID()));
+            System.out.printf("Game %s created. Game ID: %d%n", createArgs[1], gameCount);
         } else if (input.startsWith("join ") || input.startsWith("Join ")) {
             String[] joinArgs = input.split(" ");
             if (joinArgs.length != 3) {
                 PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
                 return;
             }
+            try {
+                if (Integer.parseInt(joinArgs[1]) > gameCount) {
+                    PreloginUI.throwError("Game ID exceeds number of games");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                PreloginUI.throwError("Invalid game ID");
+                return;
+            }
             if (joinArgs[2].equals("BLACK") || joinArgs[2].equals("WHITE")) {
                 int gameID = -1;
                 for (gameIDMap idMap : idList) {
-                    if (String.valueOf(idMap.userGameID()).equals(joinArgs[1])) {
+                    if (Integer.toString(idMap.userGameID()).equals(joinArgs[1])) {
                         gameID = idMap.serverGameID();
                     }
                 }
                 if (gameID == -1) {
-                    PreloginUI.throwError("Invalid game ID");
+                    PreloginUI.throwError("Game not found");
+                    return;
                 }
                 ChessBoard board = facade.joinGame(gameID, joinArgs[2]);
-                state = State.GAMEPLAY;
+                if (board == null) {
+                    return;
+                }
                 GameplayUI.drawBoard(board, joinArgs[2]);
             } else {
                 PreloginUI.throwError("Invalid command. Please specify BLACK or WHITE; Type Help for a list of valid commands");

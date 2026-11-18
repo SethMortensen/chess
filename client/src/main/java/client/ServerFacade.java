@@ -17,7 +17,6 @@ import java.util.Map;
 public class ServerFacade {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private AuthData auth;
-    private int gameCount = 0;
     int port;
 
     public ServerFacade(int port) {
@@ -104,6 +103,7 @@ public class ServerFacade {
             } else if (jsonResponse.statusCode() >= 500) {
                 PreloginUI.throwError("An unknown error occurred");
             } else if (jsonResponse.statusCode() == 200) {
+                System.out.printf("user %s logged out%n", auth.username());
                 auth = null;
             }
         } catch (URISyntaxException | IOException | InterruptedException e) {
@@ -128,7 +128,7 @@ public class ServerFacade {
             } else if (jsonResponse.statusCode() == 200) {
                 if (!jsonResponse.body().isEmpty()) {
                     var response = new Gson().fromJson(jsonResponse.body(), ListGamesResult.class);
-                    if (gameCount == 0) {
+                    if (response.games().isEmpty()) {
                         return null;
                     } else {
                         return response;
@@ -160,7 +160,6 @@ public class ServerFacade {
             } else if (jsonResponse.statusCode() >= 500) {
                 PreloginUI.throwError("An unknown error occurred");
             } else if (jsonResponse.statusCode() == 200) {
-                gameCount++;
                 return new Gson().fromJson(jsonResponse.body(), CreateGameResult.class);
             }
         } catch (URISyntaxException | IOException | InterruptedException e) {
