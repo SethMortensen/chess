@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ServerFacadeTests {
 
     private static Server server;
-    private static final ServerFacade serverFacade = new ServerFacade(8080);
+    private static final ServerFacade SERVER_FACADE = new ServerFacade(8080);
 
     @BeforeAll
     public static void init() {
@@ -26,12 +26,12 @@ public class ServerFacadeTests {
 
     @AfterEach
     void clearData() {
-        serverFacade.clear();
+        SERVER_FACADE.clear();
     }
 
     @Test
     public void registerPositiveTest() {
-        AuthData auth = serverFacade.register("username", "password", "email");
+        AuthData auth = SERVER_FACADE.register("username", "password", "email");
         assertNotNull(auth);
         assertTrue(auth.authToken().length() > 10);
         assertEquals("username", auth.username());
@@ -39,23 +39,23 @@ public class ServerFacadeTests {
 
     @Test
     public void registerAlreadyTakenTest() {
-        serverFacade.register("username", "password", "email");
-        AuthData auth = serverFacade.register("username", "password", "email");
+        SERVER_FACADE.register("username", "password", "email");
+        AuthData auth = SERVER_FACADE.register("username", "password", "email");
         assertNull(auth);
     }
 
     @Test
     public void logoutTest() {
-        serverFacade.register("username", "password", "email");
-        serverFacade.logout();
-        assertThrows(NullPointerException.class, serverFacade::listGames);
+        SERVER_FACADE.register("username", "password", "email");
+        SERVER_FACADE.logout();
+        assertThrows(NullPointerException.class, SERVER_FACADE::listGames);
     }
 
     @Test
     public void loginPositiveTest() {
-        serverFacade.register("username", "password", "email");
-        serverFacade.logout();
-        AuthData auth = serverFacade.login("username", "password");
+        SERVER_FACADE.register("username", "password", "email");
+        SERVER_FACADE.logout();
+        AuthData auth = SERVER_FACADE.login("username", "password");
         assertNotNull(auth);
         assertTrue(auth.authToken().length() > 10);
         assertEquals("username", auth.username());
@@ -63,51 +63,51 @@ public class ServerFacadeTests {
 
     @Test
     public void loginBadInputTest() {
-        AuthData auth = serverFacade.login("bad", "bad");
+        AuthData auth = SERVER_FACADE.login("bad", "bad");
         assertNull(auth);
     }
 
     @Test
     public void createGamePositiveTest() {
-        serverFacade.register("username", "password", "email");
-        CreateGameResult result = serverFacade.createGame("game1");
+        SERVER_FACADE.register("username", "password", "email");
+        CreateGameResult result = SERVER_FACADE.createGame("game1");
         assertNotNull(result);
     }
 
     @Test
     public void createGameNoAuth() {
-        assertThrows(NullPointerException.class, () -> serverFacade.createGame("game1"));
+        assertThrows(NullPointerException.class, () -> SERVER_FACADE.createGame("game1"));
     }
 
     @Test
     public void listGamesPositiveTest() {
-        serverFacade.register("username", "password", "email");
-        serverFacade.createGame("game1");
-        ListGamesResult result = serverFacade.listGames();
+        SERVER_FACADE.register("username", "password", "email");
+        SERVER_FACADE.createGame("game1");
+        ListGamesResult result = SERVER_FACADE.listGames();
         assertNotNull(result);
     }
 
     @Test
     public void joinGamePositiveTest() {
-        serverFacade.register("username", "password", "email");
-        CreateGameResult result = serverFacade.createGame("game1");
-        ChessBoard board = serverFacade.joinGame(result.gameID(), "WHITE");
+        SERVER_FACADE.register("username", "password", "email");
+        CreateGameResult result = SERVER_FACADE.createGame("game1");
+        ChessBoard board = SERVER_FACADE.joinGame(result.gameID(), "WHITE");
         assertNotNull(board);
     }
 
     @Test
     public void joinGameBadId() {
-        serverFacade.register("username", "password", "email");
-        serverFacade.createGame("game1");
-        ChessBoard board = serverFacade.joinGame(67, "WHITE");
+        SERVER_FACADE.register("username", "password", "email");
+        SERVER_FACADE.createGame("game1");
+        ChessBoard board = SERVER_FACADE.joinGame(67, "WHITE");
         assertNull(board);
     }
 
     @Test
     public void joinGameBadColor() {
-        serverFacade.register("username", "password", "email");
-        CreateGameResult result = serverFacade.createGame("game1");
-        ChessBoard board = serverFacade.joinGame(result.gameID(), "PURPLE");
+        SERVER_FACADE.register("username", "password", "email");
+        CreateGameResult result = SERVER_FACADE.createGame("game1");
+        ChessBoard board = SERVER_FACADE.joinGame(result.gameID(), "PURPLE");
         assertNull(board);
     }
 }
