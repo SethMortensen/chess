@@ -30,6 +30,20 @@ public class ServerFacade {
         httpClient.close();
     }
 
+    public void clear() {
+        String urlString = String.format("http://localhost:%d/db", port);
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(urlString))
+                    .timeout(java.time.Duration.ofMillis(5000))
+                    .DELETE()
+                    .build();
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            PreloginUI.throwError("Unable to clear data");
+        }
+    }
+
     public AuthData register(String username, String password, String email) {
         String urlString = String.format("http://localhost:%d/user", port);
         var body = Map.of("username", username, "password", password, "email", email);
