@@ -187,6 +187,10 @@ public class ChessPiece {
                 if (isValidMove(position, target, board) && board.getPiece(target) != null) {
                     moves.addAll(addPromotion(board, position, target, ChessGame.TeamColor.WHITE));
                 }
+                target = new ChessPosition(position.getRow() + 2, position.getColumn());
+                if (position.getRow() == 2 && board.getPiece(target) == null && board.getPiece(new ChessPosition(3, position.getColumn())) == null) {
+                    moves.add(new ChessMove(position, target, null));
+                }
             } else {
                 ChessPosition target = new ChessPosition(position.getRow() - 1, position.getColumn());
                 if (isValidMove(position, target, board)) {
@@ -200,13 +204,17 @@ public class ChessPiece {
                 if (isValidMove(position, target, board)) {
                     moves.addAll(addPromotion(board, position, target, ChessGame.TeamColor.BLACK));
                 }
+                target = new ChessPosition(position.getRow() - 2, position.getColumn());
+                if (position.getRow() == 7 && board.getPiece(target) == null && board.getPiece(new ChessPosition(6, position.getColumn())) == null) {
+                    moves.add(new ChessMove(position, target, null));
+                }
             }
             return moves;
         }
 
         public Collection<ChessMove> addPromotion(ChessBoard board, ChessPosition position, ChessPosition target, ChessGame.TeamColor color) {
             Collection<ChessMove> moves = new ArrayList<>();
-            if (color == ChessGame.TeamColor.BLACK && board.getPiece(target) == null) {
+            if (color == ChessGame.TeamColor.BLACK && board.getPiece(target) == null && target.getColumn() == position.getColumn()) {
                 if (position.getRow() == 2) {
                     moves.add(new ChessMove(position, target, PieceType.QUEEN));
                     moves.add(new ChessMove(position, target, PieceType.BISHOP));
@@ -215,7 +223,7 @@ public class ChessPiece {
                 } else {
                     moves.add(new ChessMove(position, target, null));
                 }
-            } else if (color == ChessGame.TeamColor.WHITE && board.getPiece(target) == null) {
+            } else if (color == ChessGame.TeamColor.WHITE && board.getPiece(target) == null && target.getColumn() == position.getColumn()) {
                 if (position.getRow() == 7) {
                     moves.add(new ChessMove(position, target, PieceType.QUEEN));
                     moves.add(new ChessMove(position, target, PieceType.BISHOP));
@@ -224,7 +232,7 @@ public class ChessPiece {
                 } else {
                     moves.add(new ChessMove(position, target, null));
                 }
-            } else if (color == ChessGame.TeamColor.BLACK && board.getPiece(target).pieceColor == ChessGame.TeamColor.WHITE) {
+            } else if (color == ChessGame.TeamColor.BLACK && board.getPiece(target) != null && board.getPiece(target).pieceColor == ChessGame.TeamColor.WHITE) {
                 if (position.getRow() == 2) {
                     moves.add(new ChessMove(position, target, PieceType.QUEEN));
                     moves.add(new ChessMove(position, target, PieceType.BISHOP));
@@ -233,7 +241,7 @@ public class ChessPiece {
                 } else {
                     moves.add(new ChessMove(position, target, null));
                 }
-            } else if (color == ChessGame.TeamColor.WHITE && board.getPiece(target).pieceColor == ChessGame.TeamColor.BLACK) {
+            } else if (color == ChessGame.TeamColor.WHITE && board.getPiece(target) != null && board.getPiece(target).pieceColor == ChessGame.TeamColor.BLACK) {
                 if (position.getRow() == 7) {
                     moves.add(new ChessMove(position, target, PieceType.QUEEN));
                     moves.add(new ChessMove(position, target, PieceType.BISHOP));
