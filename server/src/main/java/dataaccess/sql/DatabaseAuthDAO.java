@@ -71,8 +71,8 @@ public class DatabaseAuthDAO implements AuthDAO {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement("DELETE FROM auths WHERE authToken=?")) {
                 ps.setString(1, authToken);
-                int Result = ps.executeUpdate();
-                if (Result == 0) {
+                int result = ps.executeUpdate();
+                if (result == 0) {
                     throw new UnauthorizedException("unauthorized");
                 }
             }
