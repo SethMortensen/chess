@@ -52,11 +52,11 @@ public class GameplayUI {
         System.out.print(EscapeSequences.ERASE_SCREEN);
         if (color.equals("WHITE")) {
             System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED);
-            System.out.print("    a   b   c   d   e   f   g   h    \n");
-            String rowStarterColor = EscapeSequences.SET_BG_COLOR_GREEN;
-            String squareColor = EscapeSequences.SET_BG_COLOR_GREEN;
+            System.out.print("\u2003 \u2003a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h\u2003\n");
+            String rowStarterColor = EscapeSequences.SET_BG_COLOR_WHITE;
+            String squareColor = EscapeSequences.SET_BG_COLOR_WHITE;
             for (int i = 8; i >= 1; i--) {
-                System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED + "  " + i);
+                System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED + "\u2003" + i);
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
                 for (int j = 1; j <= 8; j++) {
                     ChessPiece piece = board.getPiece(new ChessPosition(i, j));
@@ -65,27 +65,27 @@ public class GameplayUI {
                     } else {
                         System.out.print(squareColor + drawPiece(piece.getPieceType(), piece.getTeamColor()));
                     }
-                    if (squareColor.equals(EscapeSequences.SET_BG_COLOR_GREEN)) {
+                    if (squareColor.equals(EscapeSequences.SET_BG_COLOR_WHITE)) {
                         squareColor = EscapeSequences.SET_BG_COLOR_BLUE;
                     } else {
-                        squareColor = EscapeSequences.SET_BG_COLOR_GREEN;
+                        squareColor = EscapeSequences.SET_BG_COLOR_WHITE;
                     }
                 }
                 System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED + i + "  \n");
-                if (rowStarterColor.equals(EscapeSequences.SET_BG_COLOR_GREEN)) {
+                if (rowStarterColor.equals(EscapeSequences.SET_BG_COLOR_WHITE)) {
                     rowStarterColor = EscapeSequences.SET_BG_COLOR_BLUE;
                 } else {
-                    rowStarterColor = EscapeSequences.SET_BG_COLOR_GREEN;
+                    rowStarterColor = EscapeSequences.SET_BG_COLOR_WHITE;
                 }
                 squareColor = rowStarterColor;
             }
             System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED);
-            System.out.print("    a   b   c   d   e   f   g   h    \n" + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+            System.out.print("\u2003 \u2003a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h\u2003\n" + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
         } else if (color.equals("BLACK")) {
             System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED);
-            System.out.print("    h   g   f   e   d   c   b   a    \n");
-            String rowStarterColor = EscapeSequences.SET_BG_COLOR_GREEN;
-            String squareColor = EscapeSequences.SET_BG_COLOR_GREEN;
+            System.out.print("\u2003 \u2003h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a\u2003\n");
+            String rowStarterColor = EscapeSequences.SET_BG_COLOR_WHITE;
+            String squareColor = EscapeSequences.SET_BG_COLOR_WHITE;
             for (int i = 1; i <= 8; i++) {
                 System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED + "  " + i);
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
@@ -96,22 +96,22 @@ public class GameplayUI {
                     } else {
                         System.out.print(squareColor + drawPiece(piece.getPieceType(), piece.getTeamColor()));
                     }
-                    if (squareColor.equals(EscapeSequences.SET_BG_COLOR_GREEN)) {
+                    if (squareColor.equals(EscapeSequences.SET_BG_COLOR_WHITE)) {
                         squareColor = EscapeSequences.SET_BG_COLOR_BLUE;
                     } else {
-                        squareColor = EscapeSequences.SET_BG_COLOR_GREEN;
+                        squareColor = EscapeSequences.SET_BG_COLOR_WHITE;
                     }
                 }
                 System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED + i + "  \n");
-                if (rowStarterColor.equals(EscapeSequences.SET_BG_COLOR_GREEN)) {
+                if (rowStarterColor.equals(EscapeSequences.SET_BG_COLOR_WHITE)) {
                     rowStarterColor = EscapeSequences.SET_BG_COLOR_BLUE;
                 } else {
-                    rowStarterColor = EscapeSequences.SET_BG_COLOR_GREEN;
+                    rowStarterColor = EscapeSequences.SET_BG_COLOR_WHITE;
                 }
                 squareColor = rowStarterColor;
             }
             System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.SET_TEXT_COLOR_RED);
-            System.out.print("    h   g   f   e   d   c   b   a    \n" + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+            System.out.print("\u2003 \u2003h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a\u2003\n" + EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
         } else {
             PreloginUI.throwError("Invalid player color. Type Help for a list of valid commands");
         }
