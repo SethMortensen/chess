@@ -153,7 +153,6 @@ public class ClientMain {
                 PreloginUI.throwError("Invalid game ID");
             }
             ChessBoard board = SERVER_FACADE.spectateGame(gameID);
-            state = State.SPECTATOR;
             GameplayUI.drawBoard(board, "WHITE");
         } else {
             PreloginUI.throwError("Invalid command. Type Help for a list of valid commands");
